@@ -29,7 +29,7 @@ public class RestaurantInfo {
     private Float restaurantRating = 0f;
 
     @Column(name = "num_of_rating", nullable = false)
-    private Integer numofrating = 0;
+    private Integer numOfRating = 0;
 
     @JsonManagedReference
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "restaurant_info")

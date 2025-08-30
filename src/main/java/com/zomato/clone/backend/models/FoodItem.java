@@ -14,7 +14,7 @@ public class FoodItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "food_item_id", nullable = false)
-    private Integer fooditemid;
+    private Integer foodItemId;
 
     @Column(name = "food_name", nullable = false)
     private String name;
@@ -26,10 +26,10 @@ public class FoodItem {
     private String image;
 
     @Column(name = "food_item_rating", nullable = false)
-    private Double fooditemrating = 0.0;
+    private Double foodItemRating = 0.0;
 
     @Column(name = "number_of_rating")
-    private Integer numofrating = 0;
+    private Integer numOfRating = 0;
 
     @JsonBackReference
     @ManyToOne
