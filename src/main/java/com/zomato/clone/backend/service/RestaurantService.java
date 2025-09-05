@@ -24,7 +24,16 @@ public class RestaurantService {
     public ResponseEntity<ArrayList<RestaurantDetails>> getRestaurants(){
 
         Iterable<RestaurantInfo> restaurants = restaurantInfoRepo.findAll();
+        Iterator<RestaurantInfo> i = restaurants.iterator();
 
-        return null;
+        ArrayList<RestaurantDetails> restInf = new ArrayList<RestaurantDetails>();
+
+        while (i.hasNext()){
+            RestaurantInfo r = i.next();
+            RestaurantDetails ra = new RestaurantDetails(r.getRestaurantName(), r.getRestaurantId(), r.getRestaurantAddress(), r.getRestaurantimages(), r.getRestaurantRating());
+            restInf.add(ra);
+        }
+
+        return ResponseEntity.ok().body(restInf);
     }
 }
