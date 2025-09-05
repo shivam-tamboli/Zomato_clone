@@ -1,5 +1,6 @@
 package com.zomato.clone.backend.service;
 
+import com.zomato.clone.backend.models.FoodItem;
 import com.zomato.clone.backend.models.RestaurantDetails;
 import com.zomato.clone.backend.models.RestaurantInfo;
 import com.zomato.clone.backend.repository.RestaurantInfoRepo;
@@ -7,8 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
 
 @Service
 public class RestaurantService {
@@ -35,5 +35,11 @@ public class RestaurantService {
         }
 
         return ResponseEntity.ok().body(restInf);
+    }
+
+    public ResponseEntity<List<FoodItem>> getFoodItems(Map<String, Integer> entity){
+        Optional<RestaurantInfo> restInfo = restaurantInfoRepo.findById(entity.get("restaurantid"));
+
+        return null;
     }
 }
