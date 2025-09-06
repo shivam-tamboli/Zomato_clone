@@ -39,6 +39,8 @@ public class RestaurantService {
     public ResponseEntity<List<FoodItem>> getFoodItems(Map<String, Integer> entity){
         Optional<RestaurantInfo> restInfo = restaurantInfoRepo.findById(entity.get("restaurantid"));
 
-        return null;
+        RestaurantInfo restaurantInfo = restInfo.get();
+        List<FoodItem> foodItem = restaurantInfo.getFooditem();
+        return ResponseEntity.ok().body(foodItem);
     }
 }
