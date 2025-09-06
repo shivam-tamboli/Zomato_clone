@@ -4,7 +4,6 @@ import com.zomato.clone.backend.models.FoodItem;
 import com.zomato.clone.backend.models.RestaurantDetails;
 import com.zomato.clone.backend.models.RestaurantInfo;
 import com.zomato.clone.backend.repository.RestaurantInfoRepo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
