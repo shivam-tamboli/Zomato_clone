@@ -23,5 +23,4 @@ public class RestaurantImages {
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
     private RestaurantInfo restaurantInfo;
-
 }

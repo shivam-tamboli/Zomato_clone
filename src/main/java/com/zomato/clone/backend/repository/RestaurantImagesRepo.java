@@ -1,9 +1,14 @@
 package com.zomato.clone.backend.repository;
 
 import com.zomato.clone.backend.models.RestaurantImages;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface RestaurantImagesRepo extends CrudRepository<RestaurantImages, Integer> {
-
-    public void deleteByRestaurantId(Integer restaurantId);
+    @Query(value = "DELETE FROM restaurant_images where restaurant_id = :rId", nativeQuery = true)
+    @Modifying
+    @Transactional
+    public void deleteByRestaurantid(Integer rId);
 }

@@ -38,9 +38,6 @@ public class OrderInfo {
     private String deliveryAddress;
 
     @JsonManagedReference
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "order_info")
-    private List<OrderFoodItems> orderFoodItems = new ArrayList<OrderFoodItems>();
-
-
-
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "orderInfo")
+    private List<OrderFoodItems> orderFoodItems = new ArrayList<>();
 }

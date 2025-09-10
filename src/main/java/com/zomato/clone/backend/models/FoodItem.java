@@ -17,7 +17,7 @@ public class FoodItem {
     private Integer foodItemId;
 
     @Column(name = "food_name", nullable = false)
-    private String name;
+    private String foodName;
 
     @Column(name = "description", nullable = false)
     private String description;
@@ -35,5 +35,4 @@ public class FoodItem {
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
     private RestaurantInfo restaurantInfo;
-
 }

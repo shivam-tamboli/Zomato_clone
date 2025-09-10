@@ -32,11 +32,10 @@ public class RestaurantInfo {
     private Integer numOfRating = 0;
 
     @JsonManagedReference
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "restaurant_info")
-    private List<RestaurantImages> restaurantimages = new ArrayList<RestaurantImages>();
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "restaurantInfo")
+    private List<RestaurantImages> restaurantImages = new ArrayList<>();
 
     @JsonManagedReference
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "restaurant_info")
-    private List<FoodItem> fooditem = new ArrayList<FoodItem>();
-
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "restaurantInfo")
+    private List<FoodItem> foodItems = new ArrayList<>();
 }
