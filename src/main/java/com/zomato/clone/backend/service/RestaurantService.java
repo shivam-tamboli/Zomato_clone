@@ -40,16 +40,16 @@ public class RestaurantService {
         return ResponseEntity.ok().body(restInf);
     }
 
-    public ResponseEntity<List<FoodItem>> getFoodItems(Map<String, Integer> entity) {
-        Optional<RestaurantInfo> restInfo = restaurantInfoRepo.findById(entity.get("restaurantid"));
+    public ResponseEntity<List<FoodItem>> getFoodItems(Integer restaurantId) {
+        Optional<RestaurantInfo> restInfo = restaurantInfoRepo.findById(restaurantId);
 
         if (restInfo.isEmpty()) {
-            return ResponseEntity.notFound().build(); // ✅ null-safety
+            return ResponseEntity.notFound().build();
         }
 
         RestaurantInfo restaurantInfo = restInfo.get();
-        // ✅ Correct getter name
         List<FoodItem> foodItems = restaurantInfo.getFoodItems();
         return ResponseEntity.ok().body(foodItems);
     }
+
 }

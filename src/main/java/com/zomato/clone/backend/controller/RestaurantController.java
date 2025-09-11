@@ -25,10 +25,11 @@ public class RestaurantController {
         return restaurantService.getRestaurants();
     }
 
-    @PostMapping(value = "get-fooditems")
-    public ResponseEntity<List<FoodItem>> getFoodItems(@RequestBody Map<String, Integer> entity){
-        return restaurantService.getFoodItems(entity);
+    @GetMapping(value = "get-fooditems")
+    public ResponseEntity<List<FoodItem>> getFoodItems(@RequestParam("restaurantId") Integer restaurantId) {
+        return restaurantService.getFoodItems(restaurantId);
     }
+
 
 
 }
