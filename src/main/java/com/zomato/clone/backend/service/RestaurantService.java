@@ -51,5 +51,4 @@ public class RestaurantService {
         List<FoodItem> foodItems = restaurantInfo.getFoodItems();
         return ResponseEntity.ok().body(foodItems);
     }
-
 }

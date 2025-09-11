@@ -21,4 +21,5 @@ public interface RestaurantInfoRepo extends JpaRepository<RestaurantInfo, Intege
 
     public Collection<? extends RestaurantInfo> findByRestaurantNameContaining(String string, Sort by);
 
+    boolean existsByRestaurantName(String name);
 }
