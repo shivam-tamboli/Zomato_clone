@@ -26,7 +26,7 @@ public class RestaurantService {
 
         while (i.hasNext()) {
             RestaurantInfo r = i.next();
-            // ✅ Correct getter names
+
             RestaurantDetails ra = new RestaurantDetails(
                     r.getRestaurantName(),
                     r.getRestaurantId(),
