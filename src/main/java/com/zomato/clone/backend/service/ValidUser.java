@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Iterator;
+import java.util.Optional;
 
 @Service
 public class ValidUser {
@@ -20,7 +21,6 @@ public class ValidUser {
     public boolean isPhoneNumberUnique(String phoneNumber){
 
         Iterable<UserInfo> itr = userInfoRepo.findAll();
-
         Iterator<UserInfo> i = itr.iterator();
 
         while (i.hasNext()){
@@ -31,5 +31,14 @@ public class ValidUser {
             }
         }
         return true;
+    }
+
+    public boolean isPasswordValid(String phoneNumber, String password) {
+
+        Optional<UserInfo> userInfo = userInfoRepo.findByPhoneNumber(phoneNumber);
+        if (userInfo.get().getPassword().equals(password)){
+            return true;
+        }
+        return false;
     }
 }
