@@ -56,4 +56,14 @@ public class UserController {
         return userService.login(loginDetails);
     }
 
+    /*
+    Endpoint: POST /zomato/user/login
+    Logout API -> Flips login status for given phone number.
+    */
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestBody Map entity){
+        return userService.logout(entity);
+    }
+
+
 }
