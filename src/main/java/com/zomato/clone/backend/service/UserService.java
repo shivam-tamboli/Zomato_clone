@@ -2,12 +2,12 @@ package com.zomato.clone.backend.service;
 
 import com.zomato.clone.backend.models.UserInfo;
 import com.zomato.clone.backend.repository.*;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -50,5 +50,21 @@ public class UserService {
         userInfo = userInfoRepo.save(userInfo);
 
         return new ResponseEntity<>("success", HttpStatus.OK);
+    }
+
+    public ResponseEntity<String> login (Map<String, String> login){
+
+        Optional<UserInfo> userInfo = userInfoRepo.findByPhoneNumber(login.get("phonenumber"));
+        UserInfo userInfo1 = userInfo.get();
+        if(userInfo1.getRole() == 0){
+            userInfo1.setLoginStatus(Boolean.TRUE);
+            userInfo1 = userInfoRepo.save(userInfo1);
+
+            return new ResponseEntity<>("Success_admin", HttpStatus.OK);
+        }else {
+            userInfo1.setLoginStatus(Boolean.TRUE);
+            userInfo1 = userInfoRepo.save(userInfo1);
+            return  new ResponseEntity<>("Success_user", HttpStatus.OK);
+        }
     }
 }
