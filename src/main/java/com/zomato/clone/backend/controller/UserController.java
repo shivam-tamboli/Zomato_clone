@@ -56,6 +56,8 @@ public class UserController {
         return userService.login(loginDetails);
     }
 
+
+
     /*
     Endpoint: POST /zomato/user/login
     Logout API -> Flips login status for given phone number.
@@ -65,5 +67,21 @@ public class UserController {
         return userService.logout(entity);
     }
 
+
+    /*
+    Endpoint: POST /zomato/user/forgot-password
+    Flow ->
+     1. Accepts phone number from request body.
+    2. Checks if the phone number exists:
+       - If not, returns "phone" (number not found).
+       - If yes, delegates to userService to fetch secret question.
+    */
+    @PostMapping(value = "/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> entity){
+        if(validUser.isPhoneNumberUnique(entity.get("phonenumber"))) {
+            return new ResponseEntity<>("phone", HttpStatus.OK);
+        }
+        return userService.forgotPassword(entity);
+    }
 
 }
