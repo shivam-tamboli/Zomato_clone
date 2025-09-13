@@ -28,8 +28,14 @@ public class UserController {
      return userService.signUp(signupDetails);
     }
 
-    @GetMapping("/test")
-    public String test(){
-        return "Controller is working";
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody Map<String, String> loginDetails){
+        if(validUser.isPhoneNumberUnique(loginDetails.get("phonenumber"))){
+            return new ResponseEntity<>("phone", HttpStatus.OK);
+        }
+        if(!validUser.isPasswordValid(loginDetails.get("phonenumber"), loginDetails.get("password"))){
+            return new ResponseEntity<>("password", HttpStatus.OK);
+        }
+        return userService.login(loginDetails);
     }
 }
