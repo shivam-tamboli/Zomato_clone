@@ -21,7 +21,7 @@ public class UserService {
     private final RestaurantRatingRepo restaurantRatingRepo;
     private final FoodItemRatingRepo foodItemRatingRepo;
 
-    //public UserService(UserInfoRepo userInfoRepo, Re){}
+
 
 
     public UserService(UserInfoRepo userInfoRepo, RestaurantInfoRepo restaurantInfoRepo, FoodItemRepo foodItemRepo,
@@ -69,10 +69,7 @@ public class UserService {
         }
     }
 
-    /*
-    Logout API -> flips login status to false for given phone number.
-    Basically -> find user by phone number -> set login status - False -> save back to DB.
-    * */
+
     public ResponseEntity<String> logout (Map entity){
         Optional<UserInfo> userInfo = userInfoRepo.findByPhoneNumber((String) entity.get("phonenumber"));
         UserInfo userInfo1 = userInfo.get();
@@ -81,14 +78,7 @@ public class UserService {
         return ResponseEntity.ok().body("success");
     }
 
-    /*
-    Forgot Password API -> returns the secret question of a user for password recovery.
-    Flow ->
-    1. Accepts a phone number from the request map.
-    2. Looks up the user in the database using that phone number.
-    3. If user exists, retrieves their secret question.
-    4. Returns the secret question in the response with HTTP 200 OK.
-    */
+
     public ResponseEntity<String> forgotPassword(Map<String, String> forgot){
         Optional<UserInfo> userInfo = userInfoRepo.findByPhoneNumber(forgot.get("phonenumber"));
         UserInfo userInfo1 = userInfo.get();
@@ -96,26 +86,28 @@ public class UserService {
     }
 
 
-    /*
-    Reset Password API -> verifies secret question & answer before updating password.
-    Flow ->
-    1. Find user by phone number.
-    2. Validate secret question & answer, else return "answer".
-    3. If valid, update password and return "success".
-    */
+
     public ResponseEntity<String> resetPassword(Map<String, String> forgotPassword) {
-
         Optional<UserInfo> userInfo = userInfoRepo.findByPhoneNumber(forgotPassword.get("phonenumber"));
-        UserInfo userInfo1 = userInfo.get();
-        if(userInfo1.getSecretQuestion().equals(forgotPassword.get("secretquestion"))){
-            if(userInfo1.getAnswer().equals(forgotPassword.get("answer"))) {
-                userInfo1.setPassword(forgotPassword.get("password"));
-                userInfo1 = userInfoRepo.save(userInfo1);
-            }else{
-                return new ResponseEntity<>("answer", HttpStatus.OK);
-            }
 
+        if (userInfo.isEmpty()) {
+            return new ResponseEntity<>("user_not_found", HttpStatus.OK);
         }
-        return new ResponseEntity<>("sucess", HttpStatus.OK);
+
+        UserInfo userInfo1 = userInfo.get();
+
+        if (!userInfo1.getSecretQuestion().equals(forgotPassword.get("secretquestion"))) {
+            return new ResponseEntity<>("invalid_question", HttpStatus.OK);
+        }
+
+        if (!userInfo1.getAnswer().equals(forgotPassword.get("answer"))) {
+            return new ResponseEntity<>("invalid_answer", HttpStatus.OK);
+        }
+
+        // update password
+        userInfo1.setPassword(forgotPassword.get("password"));
+        userInfoRepo.save(userInfo1);
+
+        return new ResponseEntity<>("success", HttpStatus.OK);
     }
 }
