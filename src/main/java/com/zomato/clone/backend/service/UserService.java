@@ -94,4 +94,28 @@ public class UserService {
         UserInfo userInfo1 = userInfo.get();
         return new ResponseEntity<>(userInfo1.getSecretQuestion(), HttpStatus.OK);
     }
+
+
+    /*
+    Reset Password API -> verifies secret question & answer before updating password.
+    Flow ->
+    1. Find user by phone number.
+    2. Validate secret question & answer, else return "answer".
+    3. If valid, update password and return "success".
+    */
+    public ResponseEntity<String> resetPassword(Map<String, String> forgotPassword) {
+
+        Optional<UserInfo> userInfo = userInfoRepo.findByPhoneNumber(forgotPassword.get("phonenumber"));
+        UserInfo userInfo1 = userInfo.get();
+        if(userInfo1.getSecretQuestion().equals(forgotPassword.get("secretquestion"))){
+            if(userInfo1.getAnswer().equals(forgotPassword.get("answer"))) {
+                userInfo1.setPassword(forgotPassword.get("password"));
+                userInfo1 = userInfoRepo.save(userInfo1);
+            }else{
+                return new ResponseEntity<>("answer", HttpStatus.OK);
+            }
+
+        }
+        return new ResponseEntity<>("sucess", HttpStatus.OK);
+    }
 }
