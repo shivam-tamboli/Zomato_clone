@@ -2,9 +2,15 @@ package com.zomato.clone.backend.controller;
 
 import com.zomato.clone.backend.service.UserService;
 import com.zomato.clone.backend.service.ValidUser;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/zomato/user")
@@ -16,5 +22,12 @@ public class UserController {
     public UserController(ValidUser validUser, UserService userService) {
         this.validUser = validUser;
         this.userService = userService;
+    }
+
+    ResponseEntity<String> signup(@RequestBody Map<String, String> signupDetails){
+     if(!validUser.isPhoneNumberUnique(signupDetails.get("phoneNumber"))){
+         return new ResponseEntity<>("phone", HttpStatus.OK);
+     }
+     return userService.signUp(signupDetails);
     }
 }
