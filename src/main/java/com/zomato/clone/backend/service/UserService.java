@@ -2,6 +2,7 @@ package com.zomato.clone.backend.service;
 
 import com.zomato.clone.backend.models.UserInfo;
 import com.zomato.clone.backend.repository.*;
+import org.apache.catalina.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -66,5 +67,17 @@ public class UserService {
             userInfo1 = userInfoRepo.save(userInfo1);
             return  new ResponseEntity<>("Success_user", HttpStatus.OK);
         }
+    }
+
+    /*
+    Logout API -> flips login status to false for given phone number.
+    Basically -> find user by phone number -> set login status - False -> save back to DB.
+    * */
+    public ResponseEntity<String> logout (Map entity){
+        Optional<UserInfo> userInfo = userInfoRepo.findByPhoneNumber((String) entity.get("phonenumber"));
+        UserInfo userInfo1 = userInfo.get();
+        userInfo1.setLoginStatus(Boolean.FALSE);
+        userInfo1 = userInfoRepo.save(userInfo1);
+        return ResponseEntity.ok().body("success");
     }
 }
