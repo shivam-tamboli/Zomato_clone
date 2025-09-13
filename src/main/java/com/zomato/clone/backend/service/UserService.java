@@ -80,4 +80,18 @@ public class UserService {
         userInfo1 = userInfoRepo.save(userInfo1);
         return ResponseEntity.ok().body("success");
     }
+
+    /*
+    Forgot Password API -> returns the secret question of a user for password recovery.
+    Flow ->
+    1. Accepts a phone number from the request map.
+    2. Looks up the user in the database using that phone number.
+    3. If user exists, retrieves their secret question.
+    4. Returns the secret question in the response with HTTP 200 OK.
+    */
+    public ResponseEntity<String> forgotPassword(Map<String, String> forgot){
+        Optional<UserInfo> userInfo = userInfoRepo.findByPhoneNumber(forgot.get("phonenumber"));
+        UserInfo userInfo1 = userInfo.get();
+        return new ResponseEntity<>(userInfo1.getSecretQuestion(), HttpStatus.OK);
+    }
 }
