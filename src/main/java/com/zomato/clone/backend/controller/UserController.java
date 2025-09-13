@@ -15,7 +15,7 @@ public class UserController {
     private final ValidUser validUser;
     private final UserService userService;
 
-    // Constructor-based dependency injection for ValidUser and UserService.
+    // Constructor-based dependency injection.
     public UserController(ValidUser validUser, UserService userService) {
         this.validUser = validUser;
         this.userService = userService;
@@ -23,10 +23,10 @@ public class UserController {
 
 
     /*
-    Endpoint: POST /zomato/user/signup
-    signup API → creates a new user
-    checks if phone number already exists, if yes → return "phone"
-    else → forward data to service to save in DB
+        Signup API -> creates a new user.
+        Flow ->
+        1. Check if phone number already exists; if yes, return "phone".
+        2. If not, delegate to service to save the user in DB.
     */
     @PostMapping("/signup")
     ResponseEntity<String> signup(@RequestBody Map<String, String> signupDetails){
@@ -37,14 +37,13 @@ public class UserController {
     }
 
 
-   /*
-   Endpoint: POST /zomato/user/login
-   login API → authenticates existing user
-    flow:
-    1. check if phone exists, if not → "phone"
-    2. check password, if wrong → "password"
-    3. if all good → delegate to service (updates login status, returns success)
-   */
+    /*
+         Login API -> authenticates an existing user.
+         Flow ->
+         1. Check if phone exists; if not, return "phone".
+         2. Check password; if wrong, return "password".
+         3. If valid, delegate to service (update login status, return success).
+     */
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody Map<String, String> loginDetails){
         if(validUser.isPhoneNumberUnique(loginDetails.get("phonenumber"))){
@@ -59,8 +58,8 @@ public class UserController {
 
 
     /*
-    Endpoint: POST /zomato/user/login
-    Logout API -> Flips login status for given phone number.
+        Logout API -> flips login status for a given phone number.
+        Flow -> delegate to service to update login status and return success.
     */
     @PostMapping("/logout")
     public ResponseEntity<String> logout(@RequestBody Map entity){
@@ -69,12 +68,11 @@ public class UserController {
 
 
     /*
-    Endpoint: POST /zomato/user/forgot-password
-    Flow ->
-     1. Accepts phone number from request body.
-    2. Checks if the phone number exists:
-       - If not, returns "phone" (number not found).
-       - If yes, delegates to userService to fetch secret question.
+        Forgot Password API -> returns the secret question for password recovery.
+        Flow ->
+        1. Accept phone number from request body.
+        2. If number not found, return "phone".
+        3. If found, delegate to service to fetch secret question.
     */
     @PostMapping(value = "/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> entity){
@@ -82,6 +80,18 @@ public class UserController {
             return new ResponseEntity<>("phone", HttpStatus.OK);
         }
         return userService.forgotPassword(entity);
+    }
+
+    /*
+        Reset Password API -> updates user's password after verifying secret question & answer.
+        Flow ->
+        1. Accept phone number, secret question, answer, and new password from request body.
+        2. Delegate to service to validate and update password.
+        3. Return "answer" if validation fails, else "success".
+    */
+    @PostMapping(value = "/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody Map<String, String> entity){
+        return userService.resetPassword(entity);
     }
 
 }
