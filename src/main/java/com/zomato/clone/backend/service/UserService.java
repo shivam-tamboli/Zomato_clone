@@ -1,14 +1,14 @@
 package com.zomato.clone.backend.service;
 
+import com.zomato.clone.backend.models.RestaurantInfo;
 import com.zomato.clone.backend.models.UserInfo;
 import com.zomato.clone.backend.repository.*;
-import org.apache.catalina.User;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -110,4 +110,25 @@ public class UserService {
 
         return new ResponseEntity<>("success", HttpStatus.OK);
     }
+
+
+    public ResponseEntity<List<RestaurantInfo>> searchByName(Map<String, String> entity) {
+        String search = entity.get("search");
+        String[] words = search.split(" ");
+
+        ArrayList<RestaurantInfo> common = new ArrayList<>();
+        for (int i = 0; i < words.length; i++) {
+            if (words[i].isEmpty()) {
+                continue;
+            }
+            common.addAll(restaurantInfoRepo.findByRestaurantNameContaining(
+                    words[i], Sort.by(Sort.Direction.DESC, "restaurantrating")));
+        }
+
+        Set<RestaurantInfo> set = new LinkedHashSet<>(common);
+        List<RestaurantInfo> restaurant = new ArrayList<>(set);
+
+        return ResponseEntity.ok().body(restaurant);
+    }
+
 }
