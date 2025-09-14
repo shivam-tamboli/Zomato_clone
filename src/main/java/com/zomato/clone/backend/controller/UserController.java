@@ -1,11 +1,13 @@
 package com.zomato.clone.backend.controller;
 
+import com.zomato.clone.backend.models.RestaurantInfo;
 import com.zomato.clone.backend.service.UserService;
 import com.zomato.clone.backend.service.ValidUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController// Marks this class as a REST controller (can handle HTTP requests & return JSON/XML)
@@ -92,6 +94,12 @@ public class UserController {
     @PostMapping(value = "/reset-password")
     public ResponseEntity<String> resetPassword(@RequestBody Map<String, String> entity){
         return userService.resetPassword(entity);
+    }
+
+
+    @PostMapping(value = "/search-by-name")
+    public ResponseEntity<List<RestaurantInfo>> searchByName(@RequestBody Map<String, String> entity){
+        return userService.searchByName(entity);
     }
 
 }
