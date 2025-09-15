@@ -121,8 +121,8 @@ public class UserService {
             if (words[i].isEmpty()) {
                 continue;
             }
-            common.addAll(restaurantInfoRepo.findByRestaurantNameContaining(
-                    words[i], Sort.by(Sort.Direction.DESC, "restaurantrating")));
+            common.addAll(restaurantInfoRepo.findByRestaurantNameContaining(words[i],
+                    Sort.by(Sort.Direction.DESC, "restaurantRating")));
         }
 
         Set<RestaurantInfo> set = new LinkedHashSet<>(common);
