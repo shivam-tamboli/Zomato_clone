@@ -9,19 +9,14 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RestaurantInfoRepo extends JpaRepository<RestaurantInfo, Integer> {
-    public Optional<RestaurantInfo> findByRestaurantNameAndRestaurantAddress(String restaurantname, String address);
 
-    public Optional<RestaurantInfo> findByRestaurantId(Integer id);
+    Optional<RestaurantInfo> findByRestaurantNameAndRestaurantAddress(String restaurantName, String address);
 
-    public List<RestaurantInfo> findByRestaurantNameContaining(String name);
+    Optional<RestaurantInfo> findByRestaurantId(Integer id);
 
-    // @Query("SELECT p FROM RestaurantInfo p WHERE " +
-    // "p.restaurantname LIKE CONCAT('%',:query, '%')")
-    // List<RestaurantInfo> searchRestaurantName(String query);
-
-    public Collection<? extends RestaurantInfo> findByRestaurantNameContaining(String string, Sort by);
+    List<RestaurantInfo> findByRestaurantNameContaining(String name, Sort sort);
 
     boolean existsByRestaurantName(String name);
 
-    Collection<? extends RestaurantInfoRepo> findByRestaurantNameContaining(String restaurantName);
+    List<RestaurantInfo> findByRestaurantNameContaining(String restaurantName);
 }
