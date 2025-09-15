@@ -1,6 +1,7 @@
 package com.zomato.clone.backend.controller;
 
 import com.zomato.clone.backend.models.RestaurantInfo;
+import com.zomato.clone.backend.models.SearchFoodItem;
 import com.zomato.clone.backend.service.UserService;
 import com.zomato.clone.backend.service.ValidUser;
 import org.springframework.http.HttpStatus;
@@ -108,5 +109,18 @@ public class UserController {
     public ResponseEntity<List<RestaurantInfo>> searchByName(@RequestBody Map<String, String> entity){
         return userService.searchByName(entity);
     }
+
+    /*
+    Search Food Items API -> returns food items with restaurant details that match the search string.
+    Flow ->
+     1) Read 'search' from request and split into words
+     2) for each non-empty word find FoodItem(s) (sorted by rating) and collect results
+     3) map each FoodItem to SearchFoodItem DTO, remove duplicates, return list.
+    */
+    @PostMapping(value = "/search-by-fooditem")
+    public ResponseEntity<List<SearchFoodItem>> searchByFoodItem(@RequestBody Map<String, String> entity){
+        return userService.searchByFoodItem(entity);
+    }
+
 
 }
