@@ -1,14 +1,12 @@
 package com.zomato.clone.backend.service;
 
-import com.zomato.clone.backend.models.FoodItem;
-import com.zomato.clone.backend.models.RestaurantInfo;
-import com.zomato.clone.backend.models.SearchFoodItem;
-import com.zomato.clone.backend.models.UserInfo;
+import com.zomato.clone.backend.models.*;
 import com.zomato.clone.backend.repository.*;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
 
 import java.util.*;
 
@@ -158,6 +156,57 @@ public class UserService {
         List<SearchFoodItem> food = new ArrayList<>(set);
 
         return ResponseEntity.ok().body(food);
+
+    }
+
+    public ResponseEntity<String> placeOrder(Map entity) {
+        Optional<RestaurantInfo> restaurantInfo = restaurantInfoRepo.findById((Integer) entity.get("restaurantId"));
+        RestaurantInfo rest = restaurantInfo.get();
+        OrderInfo orderInfo = new OrderInfo();
+        orderInfo.setRestaurantId((Integer) entity.get("restaurantId"));
+        orderInfo.setRestaurantName((String) entity.get("restaurantName"));
+        Optional<UserInfo> userInfo = userInfoRepo.findByPhoneNumber((String) entity.get("phonenumber"));
+        UserInfo user = userInfo.get();
+        orderInfo.setUserId(user.getUserId());
+        orderInfo.setDeliveryAddress((String) entity.get("deliveryAddress"));
+        orderInfo.setTotalAmount((Integer) entity.get("totalAmount"));
+        orderInfoRepo.save(orderInfo);
+
+        ArrayList<String> fooditemid = (ArrayList) entity.get("foodItemId");
+        ListIterator<String> ll = fooditemid.listIterator();
+
+        ArrayList<String> foodname = (ArrayList) entity.get("foodName");
+        ListIterator<String> name = foodname.listIterator();
+
+        ArrayList<String> amount = (ArrayList) entity.get("amount");
+        ListIterator<String> famount = amount.listIterator();
+
+        ArrayList<String> quantity = (ArrayList) entity.get("quantity");
+        ListIterator<String> fquantity = quantity.listIterator();
+
+        while (ll.hasNext()) {
+
+            OrderFoodItems orderFoodItems = new OrderFoodItems();
+            String s = ll.next();
+            orderFoodItems.setFoodItemId(Integer.parseInt(s));
+
+            s = name.next();
+            orderFoodItems.setFoodName(s);
+
+            s = famount.next();
+            orderFoodItems.setAmount(Integer.parseInt(s));
+
+            s = fquantity.next();
+            orderFoodItems.setQuantity(Integer.parseInt(s));
+
+            orderFoodItems.setOrderInfo(orderInfo);
+            orderInfo.getOrderFoodItems().add(orderFoodItems);
+            orderInfoRepo.save(orderInfo);
+        }
+
+            System.out.println("*******************************" + orderInfo);
+
+            return ResponseEntity.ok().body("success");
 
     }
 }
