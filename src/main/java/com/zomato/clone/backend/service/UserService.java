@@ -296,4 +296,20 @@ public class UserService {
         return ResponseEntity.ok("success");
     }
 
+    public ResponseEntity<List<FoodItemDetails>> getAllFoodItems(){
+        List<FoodItem> foodItem =  foodItemRepo.findAll();
+        ListIterator<FoodItem> itr = foodItem.listIterator();
+
+        List<FoodItemDetails> fid = new ArrayList<FoodItemDetails>();
+
+        while (itr.hasNext()){
+            FoodItem foodItem1 = itr.next();
+
+            RestaurantInfo ri = foodItem1.getRestaurantInfo();
+            FoodItemDetails fs = new FoodItemDetails(ri.getRestaurantId(), foodItem1, ri.getRestaurantName());
+            fid.add(fs);
+        }
+        return ResponseEntity.ok().body(fid);
+    }
+
 }
