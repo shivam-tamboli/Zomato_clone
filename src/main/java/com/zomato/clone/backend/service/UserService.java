@@ -1,6 +1,8 @@
 package com.zomato.clone.backend.service;
 
+import com.zomato.clone.backend.models.FoodItem;
 import com.zomato.clone.backend.models.RestaurantInfo;
+import com.zomato.clone.backend.models.SearchFoodItem;
 import com.zomato.clone.backend.models.UserInfo;
 import com.zomato.clone.backend.repository.*;
 import org.springframework.data.domain.Sort;
@@ -22,8 +24,6 @@ public class UserService {
     private final FoodItemRatingRepo foodItemRatingRepo;
 
 
-
-
     public UserService(UserInfoRepo userInfoRepo, RestaurantInfoRepo restaurantInfoRepo, FoodItemRepo foodItemRepo,
                        OrderFoodItemsRepo orderFoodItemsRepo, OrderInfoRepo orderInfoRepo, RestaurantRatingRepo restaurantRatingRepo,
                        FoodItemRatingRepo foodItemRatingRepo) {
@@ -36,7 +36,7 @@ public class UserService {
         this.foodItemRatingRepo = foodItemRatingRepo;
     }
 
-    public ResponseEntity<String> signUp (Map<String, String> signup){
+    public ResponseEntity<String> signUp(Map<String, String> signup) {
 
         UserInfo userInfo = new UserInfo();
         userInfo.setName(signup.get("name"));
@@ -53,24 +53,24 @@ public class UserService {
         return new ResponseEntity<>("success", HttpStatus.OK);
     }
 
-    public ResponseEntity<String> login (Map<String, String> login){
+    public ResponseEntity<String> login(Map<String, String> login) {
 
         Optional<UserInfo> userInfo = userInfoRepo.findByPhoneNumber(login.get("phonenumber"));
         UserInfo userInfo1 = userInfo.get();
-        if(userInfo1.getRole() == 0){
+        if (userInfo1.getRole() == 0) {
             userInfo1.setLoginStatus(Boolean.TRUE);
             userInfo1 = userInfoRepo.save(userInfo1);
 
             return new ResponseEntity<>("Success_admin", HttpStatus.OK);
-        }else {
+        } else {
             userInfo1.setLoginStatus(Boolean.TRUE);
             userInfo1 = userInfoRepo.save(userInfo1);
-            return  new ResponseEntity<>("Success_user", HttpStatus.OK);
+            return new ResponseEntity<>("Success_user", HttpStatus.OK);
         }
     }
 
 
-    public ResponseEntity<String> logout (Map entity){
+    public ResponseEntity<String> logout(Map entity) {
         Optional<UserInfo> userInfo = userInfoRepo.findByPhoneNumber((String) entity.get("phonenumber"));
         UserInfo userInfo1 = userInfo.get();
         userInfo1.setLoginStatus(Boolean.FALSE);
@@ -79,12 +79,11 @@ public class UserService {
     }
 
 
-    public ResponseEntity<String> forgotPassword(Map<String, String> forgot){
+    public ResponseEntity<String> forgotPassword(Map<String, String> forgot) {
         Optional<UserInfo> userInfo = userInfoRepo.findByPhoneNumber(forgot.get("phonenumber"));
         UserInfo userInfo1 = userInfo.get();
         return new ResponseEntity<>(userInfo1.getSecretQuestion(), HttpStatus.OK);
     }
-
 
 
     public ResponseEntity<String> resetPassword(Map<String, String> forgotPassword) {
@@ -131,4 +130,34 @@ public class UserService {
         return ResponseEntity.ok().body(restaurant);
     }
 
+
+    public ResponseEntity<List<SearchFoodItem>> searchByFoodItem(Map<String, String> entity) {
+
+        String search = entity.get("search");
+        String[] words = search.split(" ");
+
+        List<FoodItem> common = new ArrayList<FoodItem>();
+        for (int i = 0; i < words.length; i++) {
+            if (words[i] == "") {
+                continue;
+            }
+            common.addAll(foodItemRepo.findByFoodNameContaining(words[i],
+                    Sort.by(Sort.Direction.DESC, "foodItemRating")));
+        }
+        List<FoodItem> foodItems = common;
+        ListIterator<FoodItem> itr = foodItems.listIterator();
+        List<SearchFoodItem> sfooditem = new ArrayList<>();
+        while (itr.hasNext()) {
+            FoodItem food = itr.next();
+            RestaurantInfo rest = food.getRestaurantInfo();
+            SearchFoodItem searchFood = new SearchFoodItem(rest.getRestaurantId(), rest.getRestaurantName(),
+                    rest.getRestaurantAddress(), rest.getRestaurantRating(), food);
+            sfooditem.add(searchFood);
+        }
+        Set<SearchFoodItem> set = new LinkedHashSet<>(sfooditem);
+        List<SearchFoodItem> food = new ArrayList<>(set);
+
+        return ResponseEntity.ok().body(food);
+
+    }
 }
