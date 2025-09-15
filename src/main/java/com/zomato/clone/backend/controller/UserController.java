@@ -97,6 +97,13 @@ public class UserController {
     }
 
 
+    /*
+    Search By Name API -> returns restaurants matching the search string.
+    Flow ->
+    1. Accepts a search string from the request body.
+    2. Delegates the search to UserService.
+    3. Returns a list of matching RestaurantInfo objects in the response.
+    */
     @PostMapping(value = "/search-by-name")
     public ResponseEntity<List<RestaurantInfo>> searchByName(@RequestBody Map<String, String> entity){
         return userService.searchByName(entity);
