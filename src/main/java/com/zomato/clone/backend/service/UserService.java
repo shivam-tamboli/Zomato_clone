@@ -2,6 +2,7 @@ package com.zomato.clone.backend.service;
 
 import com.zomato.clone.backend.models.*;
 import com.zomato.clone.backend.repository.*;
+import org.apache.catalina.User;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -311,5 +312,17 @@ public class UserService {
         }
         return ResponseEntity.ok().body(fid);
     }
+
+    public ResponseEntity<List<OrderInfo>> getAllOrderDetails(Map entity) {
+        Optional<UserInfo> userInfo = userInfoRepo.findByPhoneNumber((String) entity.get("phonenumber"));
+        UserInfo user = userInfo.get();
+        int id = user.getUserId();
+        List<OrderInfo> oi = orderInfoRepo.findAllByUserid(id);
+        if (oi.isEmpty()) {
+            return ResponseEntity.ok().body(oi);
+        }
+        return ResponseEntity.ok().body(oi);
+    }
+
 
 }
