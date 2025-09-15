@@ -211,91 +211,89 @@ public class UserService {
 
     }
 
-    public ResponseEntity<String> rateOrder(Map entity) {
-        Optional<RestaurantInfo> restaurantInfo = restaurantInfoRepo.findById((Integer) entity.get("restaurantId"));
-        Optional<UserInfo> userInfo = userInfoRepo.findByPhoneNumber((String) entity.get("phonenumber"));
-        Optional<OrderInfo> order = orderInfoRepo.findByUserIdAndOrderId(userInfo.get().getUserId(), (Integer) entity.get("orderId"));
-        OrderInfo orderInfo = order.get();
+    public ResponseEntity<String> rateOrder(Map<String, Object> entity) {
+
+        // Fetch restaurant
+        Integer restaurantId = (Integer) entity.get("restaurantId");
+        RestaurantInfo rest = restaurantInfoRepo.findById(restaurantId)
+                .orElseThrow(() -> new RuntimeException("Restaurant not found"));
+
+        // Fetch user
+        String phoneNumber = (String) entity.get("phonenumber");
+        UserInfo user = userInfoRepo.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Fetch order
+        Integer orderId = (Integer) entity.get("orderId");
+        OrderInfo orderInfo = orderInfoRepo.findByUserIdAndOrderId(user.getUserId(), orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        // Update order
         orderInfo.setOrderFlag(1);
         orderInfoRepo.save(orderInfo);
-        RestaurantInfo rest = restaurantInfo.get();
-        int id = (Integer) entity.get("restaurantId");
-        Float f = Float.valueOf(id);   // recommended
-        Float f1 = f.floatValue();
-        Float rating = 0f;
-        if (rest.getRestaurantRating() == 0.0) {
-            rating = f1;
-            rest.setRestaurantRating(rating);
-            rest.setNumOfRating(rest.getNumOfRating() + 1);
-            restaurantInfoRepo.save(rest);
-        } else {
-            rating = (float) (((rest.getRestaurantRating() * rest.getNumOfRating()) + f1) / (rest.getNumOfRating() + 1));
-            rest.setRestaurantRating(rating);
-            rest.setNumOfRating(rest.getNumOfRating() + 1);
-            restaurantInfoRepo.save(rest);
-        }
-        RestaurantRating restaurantRating = new RestaurantRating();
 
-        restaurantRating.setName(userInfo.get().getName());
-        restaurantRating.setRestaurantId((Integer) entity.get("restaurantid"));
+        // Update restaurant rating
+        Float ratingValue = ((Number) entity.get("restaurantRating")).floatValue(); // rating from request
+        if (rest.getRestaurantRating() == 0.0f) {
+            rest.setRestaurantRating(ratingValue);
+            rest.setNumOfRating(rest.getNumOfRating() + 1);
+        } else {
+            Float newRating = (float) (((rest.getRestaurantRating() * rest.getNumOfRating()) + ratingValue)
+                    / (rest.getNumOfRating() + 1));
+            rest.setRestaurantRating(newRating);
+            rest.setNumOfRating(rest.getNumOfRating() + 1);
+        }
+        restaurantInfoRepo.save(rest);
+
+        // Save restaurant review
+        RestaurantRating restaurantRating = new RestaurantRating();
+        restaurantRating.setName(user.getName());
+        restaurantRating.setRestaurantId(restaurantId);
         restaurantRating.setRestaurantName(rest.getRestaurantName());
         restaurantRating.setRestaurantRating(rest.getRestaurantRating());
-        restaurantRating.setRestaurantReview((String) entity.get("restaurantreview"));
+        restaurantRating.setRestaurantReview((String) entity.get("restaurantReview"));
         restaurantRatingRepo.save(restaurantRating);
 
-        ArrayList<String> fooditemid = (ArrayList) entity.get("fooditemid");
+        // Save food item ratings
+        List<String> foodItemIds = (List<String>) entity.get("foodItemIds");
+        List<String> foodItemRatings = (List<String>) entity.get("foodItemRatings");
+        List<String> foodItemReviews = (List<String>) entity.get("foodItemReviews");
 
-        if (fooditemid.isEmpty()) {
-            return ResponseEntity.ok().body("success");
-        } else {
-            ListIterator<String> ll = fooditemid.listIterator();
+        if (foodItemIds != null && !foodItemIds.isEmpty()) {
+            for (int i = 0; i < foodItemIds.size(); i++) {
+                Integer foodId = Integer.parseInt(foodItemIds.get(i));
+                Double foodRatingValue = Double.parseDouble(foodItemRatings.get(i));
+                String foodReview = foodItemReviews.get(i);
 
-            ArrayList<String> fooditemrating = (ArrayList) entity.get("fooditemrating");
-            ListIterator<String> ratingitr = fooditemrating.listIterator();
+                FoodItem foodItem = foodItemRepo.findById(foodId)
+                        .orElseThrow(() -> new RuntimeException("Food item not found"));
 
-            ArrayList<String> fooditemreview = (ArrayList) entity.get("fooditemreview");
-            ListIterator<String> review = fooditemreview.listIterator();
+                // Update FoodItemRating entity
+                FoodItemRating foodItemRating = new FoodItemRating();
+                foodItemRating.setName(user.getName());
+                foodItemRating.setRestaurantId(restaurantId);
+                foodItemRating.setRestaurantName(rest.getRestaurantName());
+                foodItemRating.setFoodItemId(foodId);
+                foodItemRating.setFoodName(foodItem.getFoodName());
+                foodItemRating.setFoodItemRating(foodRatingValue);
+                foodItemRating.setFoodItemReview(foodReview);
+                foodItemRatingRepo.save(foodItemRating);
 
-            while (ll.hasNext()) {
-
-                FoodItemRating foodrating = new FoodItemRating();
-                foodrating.setName(userInfo.get().getName());
-                foodrating.setRestaurantId((Integer) entity.get("restaurantid"));
-                foodrating.setRestaurantName(rest.getRestaurantName());
-
-                String s = ll.next();
-                Optional<FoodItem> food = foodItemRepo.findById(Integer.parseInt(s));
-                FoodItem foodItem = food.get();
-                foodrating.setFoodItemId(Integer.parseInt(s));
-                foodrating.setFoodName(foodItem.getFoodName());
-
-                String rate = ratingitr.next();
-                System.out.println("########################" + rate);
-                System.out.println("***************************" + Double.parseDouble(rate));
-
-                foodrating.setFoodItemRating(Double.parseDouble(rate));
-                String fReview = review.next();
-                foodrating.setFoodItemReview(fReview);
-                foodItemRatingRepo.save(foodrating);
-                Double foodRating = 0.0;
-
+                // Update FoodItem aggregate rating
                 if (foodItem.getFoodItemRating() == 0.0) {
-
-                    foodItem.setFoodItemRating(Double.parseDouble(rate));
+                    foodItem.setFoodItemRating(foodRatingValue);
                     foodItem.setNumOfRating(foodItem.getNumOfRating() + 1);
-                    foodItemRepo.save(foodItem);
-
                 } else {
-                    foodRating = ((foodItem.getFoodItemRating() * foodItem.getNumOfRating())
-                            + Double.parseDouble(rate)) / (foodItem.getNumOfRating() + 1);
-
-                    foodItem.setFoodItemRating(foodRating);
+                    Double newFoodRating = ((foodItem.getFoodItemRating() * foodItem.getNumOfRating())
+                            + foodRatingValue) / (foodItem.getNumOfRating() + 1);
+                    foodItem.setFoodItemRating(newFoodRating);
                     foodItem.setNumOfRating(foodItem.getNumOfRating() + 1);
-                    foodItemRepo.save(foodItem);
                 }
+                foodItemRepo.save(foodItem);
             }
-
         }
-        return ResponseEntity.ok().body("success");
+
+        return ResponseEntity.ok("success");
     }
+
 }
