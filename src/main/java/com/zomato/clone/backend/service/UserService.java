@@ -159,6 +159,7 @@ public class UserService {
 
     }
 
+
     public ResponseEntity<String> placeOrder(Map entity) {
         Optional<RestaurantInfo> restaurantInfo = restaurantInfoRepo.findById((Integer) entity.get("restaurantId"));
         RestaurantInfo rest = restaurantInfo.get();
