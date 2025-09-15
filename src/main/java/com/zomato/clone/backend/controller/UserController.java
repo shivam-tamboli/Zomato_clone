@@ -130,10 +130,16 @@ public class UserController {
     3) Create OrderInfo entity and save;
     4) Iterate over food items, create OrderFoodItems, attach to OrderInfo;
     5) Save order with all items and return success.
-     */
+    */
     @PostMapping(value = "/place-order")
     public ResponseEntity<String> placeOrder(@RequestBody Map entity){
+
         return userService.placeOrder(entity);
     }
 
+    @PostMapping(value = "/rate-order")
+    public ResponseEntity<String> rateOrder(@RequestBody Map entity) {
+        return userService.rateOrder(entity);
+
+    }
 }
