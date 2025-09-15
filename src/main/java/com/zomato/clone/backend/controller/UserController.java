@@ -122,5 +122,18 @@ public class UserController {
         return userService.searchByFoodItem(entity);
     }
 
+    /*
+    Place Order API -> creates an order with its food items.
+    Flow ->
+    1) Read order and food item details from request body;
+    2) Fetch restaurant and user info;
+    3) Create OrderInfo entity and save;
+    4) Iterate over food items, create OrderFoodItems, attach to OrderInfo;
+    5) Save order with all items and return success.
+     */
+    @PostMapping(value = "/place-order")
+    public ResponseEntity<String> placeOrder(@RequestBody Map entity){
+        return userService.placeOrder(entity);
+    }
 
 }
