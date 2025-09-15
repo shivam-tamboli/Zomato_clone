@@ -1,5 +1,6 @@
 package com.zomato.clone.backend.controller;
 
+import com.zomato.clone.backend.models.FoodItemDetails;
 import com.zomato.clone.backend.models.RestaurantInfo;
 import com.zomato.clone.backend.models.SearchFoodItem;
 import com.zomato.clone.backend.service.UserService;
@@ -141,5 +142,10 @@ public class UserController {
     public ResponseEntity<String> rateOrder(@RequestBody Map entity) {
         return userService.rateOrder(entity);
 
+    }
+
+    @GetMapping(value = "/get-all-food-items")
+    public ResponseEntity<List<FoodItemDetails>> getAllFoodItems() {
+        return userService.getAllFoodItems();
     }
 }
