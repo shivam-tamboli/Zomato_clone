@@ -205,9 +205,97 @@ public class UserService {
             orderInfoRepo.save(orderInfo);
         }
 
-            System.out.println("*******************************" + orderInfo);
+        System.out.println("*******************************" + orderInfo);
 
+        return ResponseEntity.ok().body("success");
+
+    }
+
+    public ResponseEntity<String> rateOrder(Map entity) {
+        Optional<RestaurantInfo> restaurantInfo = restaurantInfoRepo.findById((Integer) entity.get("restaurantId"));
+        Optional<UserInfo> userInfo = userInfoRepo.findByPhoneNumber((String) entity.get("phonenumber"));
+        Optional<OrderInfo> order = orderInfoRepo.findByUserIdAndOrderId(userInfo.get().getUserId(), (Integer) entity.get("orderId"));
+        OrderInfo orderInfo = order.get();
+        orderInfo.setOrderFlag(1);
+        orderInfoRepo.save(orderInfo);
+        RestaurantInfo rest = restaurantInfo.get();
+        int id = (Integer) entity.get("restaurantId");
+        Float f = Float.valueOf(id);   // recommended
+        Float f1 = f.floatValue();
+        Float rating = 0f;
+        if (rest.getRestaurantRating() == 0.0) {
+            rating = f1;
+            rest.setRestaurantRating(rating);
+            rest.setNumOfRating(rest.getNumOfRating() + 1);
+            restaurantInfoRepo.save(rest);
+        } else {
+            rating = (float) (((rest.getRestaurantRating() * rest.getNumOfRating()) + f1) / (rest.getNumOfRating() + 1));
+            rest.setRestaurantRating(rating);
+            rest.setNumOfRating(rest.getNumOfRating() + 1);
+            restaurantInfoRepo.save(rest);
+        }
+        RestaurantRating restaurantRating = new RestaurantRating();
+
+        restaurantRating.setName(userInfo.get().getName());
+        restaurantRating.setRestaurantId((Integer) entity.get("restaurantid"));
+        restaurantRating.setRestaurantName(rest.getRestaurantName());
+        restaurantRating.setRestaurantRating(rest.getRestaurantRating());
+        restaurantRating.setRestaurantReview((String) entity.get("restaurantreview"));
+        restaurantRatingRepo.save(restaurantRating);
+
+        ArrayList<String> fooditemid = (ArrayList) entity.get("fooditemid");
+
+        if (fooditemid.isEmpty()) {
             return ResponseEntity.ok().body("success");
+        } else {
+            ListIterator<String> ll = fooditemid.listIterator();
 
+            ArrayList<String> fooditemrating = (ArrayList) entity.get("fooditemrating");
+            ListIterator<String> ratingitr = fooditemrating.listIterator();
+
+            ArrayList<String> fooditemreview = (ArrayList) entity.get("fooditemreview");
+            ListIterator<String> review = fooditemreview.listIterator();
+
+            while (ll.hasNext()) {
+
+                FoodItemRating foodrating = new FoodItemRating();
+                foodrating.setName(userInfo.get().getName());
+                foodrating.setRestaurantId((Integer) entity.get("restaurantid"));
+                foodrating.setRestaurantName(rest.getRestaurantName());
+
+                String s = ll.next();
+                Optional<FoodItem> food = foodItemRepo.findById(Integer.parseInt(s));
+                FoodItem foodItem = food.get();
+                foodrating.setFoodItemId(Integer.parseInt(s));
+                foodrating.setFoodName(foodItem.getFoodName());
+
+                String rate = ratingitr.next();
+                System.out.println("########################" + rate);
+                System.out.println("***************************" + Double.parseDouble(rate));
+
+                foodrating.setFoodItemRating(Double.parseDouble(rate));
+                String fReview = review.next();
+                foodrating.setFoodItemReview(fReview);
+                foodItemRatingRepo.save(foodrating);
+                Double foodRating = 0.0;
+
+                if (foodItem.getFoodItemRating() == 0.0) {
+
+                    foodItem.setFoodItemRating(Double.parseDouble(rate));
+                    foodItem.setNumOfRating(foodItem.getNumOfRating() + 1);
+                    foodItemRepo.save(foodItem);
+
+                } else {
+                    foodRating = ((foodItem.getFoodItemRating() * foodItem.getNumOfRating())
+                            + Double.parseDouble(rate)) / (foodItem.getNumOfRating() + 1);
+
+                    foodItem.setFoodItemRating(foodRating);
+                    foodItem.setNumOfRating(foodItem.getNumOfRating() + 1);
+                    foodItemRepo.save(foodItem);
+                }
+            }
+
+        }
+        return ResponseEntity.ok().body("success");
     }
 }
