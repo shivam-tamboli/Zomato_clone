@@ -5,7 +5,11 @@ import com.zomato.clone.backend.models.RestaurantInfo;
 import com.zomato.clone.backend.repository.FoodItemRepo;
 import com.zomato.clone.backend.repository.RestaurantImagesRepo;
 import com.zomato.clone.backend.repository.RestaurantInfoRepo;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.sql.SQLOutput;
+import java.util.*;
 
 @Service
 public class AdminService {
@@ -19,4 +23,33 @@ public class AdminService {
         this.restaurantImagesRepo = restaurantImagesRepo;
         this.foodItemRepo = foodItemRepo;
     }
+
+    public ResponseEntity<String> addRestaurant(Map entity){
+        System.out.println("********************************************************" + "success");
+        Optional<RestaurantInfo> restaurant = restaurantInfoRepo.findByRestaurantNameAndRestaurantAddress((String) entity.get("restaurantName")
+        , (String) entity.get("restaurantAddress"));
+
+        if(restaurant.isPresent()){
+            return ResponseEntity.ok().body("address");
+        }
+
+        RestaurantInfo restaurantInfo = new RestaurantInfo();
+        restaurantInfo.setRestaurantName((String) entity.get("restaurantName"));
+        restaurantInfo.setRestaurantAddress((String) entity.get("restaurantAddress"));
+
+        ArrayList<String> imagesLink = (ArrayList<String>) entity.get("imagesLink");
+        ListIterator<String> ll = imagesLink.listIterator();
+
+        while(ll.hasNext()){
+            RestaurantImages images = new RestaurantImages();
+            String link = ll.next();
+            images.setLink(link);
+            images.setRestaurantInfo(restaurantInfo);
+            restaurantInfo.getRestaurantImages().add(images);
+            restaurantInfoRepo.save(restaurantInfo);
+        }
+        return ResponseEntity.ok().body("success");
+
+    }
+
 }
