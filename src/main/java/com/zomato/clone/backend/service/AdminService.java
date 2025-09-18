@@ -37,7 +37,7 @@ public class AdminService {
         restaurantInfo.setRestaurantName((String) entity.get("restaurantName"));
         restaurantInfo.setRestaurantAddress((String) entity.get("restaurantAddress"));
 
-        ArrayList<String> imagesLink = (ArrayList<String>) entity.get("imagesLink");
+        ArrayList<String> imagesLink = (ArrayList) entity.get("restaurantimages");
         ListIterator<String> ll = imagesLink.listIterator();
 
         while(ll.hasNext()){
@@ -49,7 +49,5 @@ public class AdminService {
             restaurantInfoRepo.save(restaurantInfo);
         }
         return ResponseEntity.ok().body("success");
-
     }
-
 }
