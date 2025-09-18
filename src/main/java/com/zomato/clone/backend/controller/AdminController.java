@@ -39,4 +39,9 @@ public class AdminController {
     public ResponseEntity<String> addFoodItems(@RequestBody Map entity){
         return adminService.addFoodItems(entity);
     }
+
+    @PostMapping(value = "/edit-fooditems")
+    public ResponseEntity<String> editFoodItems(@RequestBody Map entity){
+        return adminService.editFoodItems(entity);
+    }
 }
