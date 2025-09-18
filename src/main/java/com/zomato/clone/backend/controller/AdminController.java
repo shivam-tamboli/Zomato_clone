@@ -44,4 +44,9 @@ public class AdminController {
     public ResponseEntity<String> editFoodItems(@RequestBody Map entity){
         return adminService.editFoodItems(entity);
     }
+
+    @PostMapping(value = "/delete-fooditems")
+    public ResponseEntity<String> deleteFoodItem(@RequestBody Map entity){
+        return adminService.deleteFoodItem(entity);
+    }
 }
