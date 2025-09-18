@@ -1,5 +1,6 @@
 package com.zomato.clone.backend.service;
 
+import com.zomato.clone.backend.models.FoodItem;
 import com.zomato.clone.backend.models.RestaurantImages;
 import com.zomato.clone.backend.models.RestaurantInfo;
 import com.zomato.clone.backend.repository.FoodItemRepo;
@@ -86,6 +87,26 @@ public class AdminService {
     public ResponseEntity<String> deleteRestaurant(Map entity){
 
         restaurantInfoRepo.deleteById((Integer) entity.get("restaurantId"));
+        return ResponseEntity.ok().body("success");
+    }
+
+    public ResponseEntity<String> addFoodItems(Map entity){
+        Optional<RestaurantInfo> restInfo = restaurantInfoRepo.findById((Integer) entity.get("restaurantId"));
+        Optional<FoodItem> foodItem = foodItemRepo.findByRestaurantIdAndFoodName((Integer) entity.get("restaurantId"), (String) entity.get("foodName"));
+
+        if(foodItem.isPresent()){
+            return ResponseEntity.ok().body("success");
+        }
+
+        FoodItem foodItemInfo = new FoodItem();
+        foodItemInfo.setFoodName((String) entity.get("foodName"));
+        foodItemInfo.setDescription((String) entity.get("description"));
+        foodItemInfo.setImage((String) entity.get("image"));
+        foodItemInfo.setPrice(Integer.parseInt((String) entity.get("price")));
+        foodItemRepo.save(foodItemInfo);
+        foodItemInfo.setRestaurantInfo(restInfo.get());
+        restInfo.get().getFoodItems().add(foodItemInfo);
+        restaurantInfoRepo.save(restInfo.get());
         return ResponseEntity.ok().body("success");
     }
 }
