@@ -50,4 +50,36 @@ public class AdminService {
         }
         return ResponseEntity.ok().body("success");
     }
+
+    ResponseEntity<String> editRestaurant(Map entity){
+        Integer restaurantId = (Integer) entity.get("restaurantId");
+        Optional<RestaurantInfo> restaurantInfo = restaurantInfoRepo.findById(restaurantId);
+        RestaurantInfo rest = restaurantInfo.get();
+
+        Optional<RestaurantInfo> info = restaurantInfoRepo.findByRestaurantNameAndRestaurantAddress(
+                (String) entity.get("restaurantName"), (String) entity.get("restaurantAddress"));
+
+        rest.setRestaurantName((String) entity.get("restaurantName"));
+        rest.setRestaurantAddress((String) entity.get("restaurantAddress"));
+        restaurantInfoRepo.save(rest);
+        restaurantImagesRepo.deleteByRestaurantid(restaurantId);
+
+        ArrayList<String> imagesLink = (ArrayList) entity.get("restaurantimages");
+        ListIterator<String> ll = imagesLink.listIterator();
+        rest = restaurantInfo.get();
+        for(int i = 0; i < imagesLink.size(); i++){
+            System.out.println("****************************************************" + imagesLink.get(i));
+        }
+        while (ll.hasNext()) {
+
+            RestaurantImages img = new RestaurantImages();
+            String link = ll.next();
+            img.setLink(link);
+            img.setRestaurantInfo(rest);
+            rest.getRestaurantImages().add(img);
+            restaurantInfoRepo.save(rest);
+        }
+        return ResponseEntity.ok().body("success");
+
+    }
 }
