@@ -24,4 +24,9 @@ public class AdminController {
     public ResponseEntity<String> addRestaurant(@RequestBody Map entity){
         return adminService.addRestaurant(entity);
     }
+
+    @PostMapping(value = "/edit-restaurant")
+    public ResponseEntity<String> editRestaurant(@RequestBody Map entity){
+        return adminService.editRestaurant(entity);
+    }
 }
