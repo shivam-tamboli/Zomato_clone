@@ -121,7 +121,7 @@ public class AdminService {
             return ResponseEntity.ok().body("name");
         }
         Optional<FoodItem> foodItem1 = foodItemRepo.findById(fooditemid);
-        FoodItem f = foodItem.get();
+        FoodItem f = foodItem1.get();
         f.setFoodName((String) entity.get("foodName"));
         f.setDescription((String) entity.get("description"));
         f.setImage((String) entity.get("image"));
@@ -129,6 +129,11 @@ public class AdminService {
         foodItemRepo.save(f);
         f.setRestaurantInfo(rest);
         restaurantInfoRepo.save(rest);
+        return ResponseEntity.ok().body("success");
+    }
+
+    public ResponseEntity<String> deleteFoodItem(Map<String, String> entity){
+        foodItemRepo.deleteById(Integer.parseInt(entity.get("foodItemId")));
         return ResponseEntity.ok().body("success");
     }
 }
