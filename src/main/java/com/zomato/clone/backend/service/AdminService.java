@@ -51,7 +51,7 @@ public class AdminService {
         return ResponseEntity.ok().body("success");
     }
 
-    ResponseEntity<String> editRestaurant(Map entity){
+    public ResponseEntity<String> editRestaurant(Map entity){
         Integer restaurantId = (Integer) entity.get("restaurantId");
         Optional<RestaurantInfo> restaurantInfo = restaurantInfoRepo.findById(restaurantId);
         RestaurantInfo rest = restaurantInfo.get();
