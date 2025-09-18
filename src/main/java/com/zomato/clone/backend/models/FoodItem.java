@@ -22,6 +22,9 @@ public class FoodItem {
     @Column(name = "description", nullable = false)
     private String description;
 
+    @Column(name = "price")
+    private Integer price;
+
     @Column(name = "image", nullable = false)
     private String image;
 
