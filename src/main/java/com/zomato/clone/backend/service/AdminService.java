@@ -109,4 +109,26 @@ public class AdminService {
         restaurantInfoRepo.save(restInfo.get());
         return ResponseEntity.ok().body("success");
     }
+
+    public ResponseEntity<String> editFoodItems(Map entity){
+        Integer restaurantId = (Integer) entity.get("restaurantId");
+        Optional<RestaurantInfo> restaurantInfo = restaurantInfoRepo.findById(restaurantId);
+        RestaurantInfo rest = restaurantInfo.get();
+        Integer fooditemid = (Integer) entity.get("fooditemid");
+        Optional<FoodItem> foodItem = foodItemRepo.findByRestaurantIdAndFoodName((Integer) entity.get("restaurantId"), (String) entity.get("foodName"));
+
+        if(foodItem.isPresent() && foodItem.get().getFoodItemId() != fooditemid){
+            return ResponseEntity.ok().body("name");
+        }
+        Optional<FoodItem> foodItem1 = foodItemRepo.findById(fooditemid);
+        FoodItem f = foodItem.get();
+        f.setFoodName((String) entity.get("foodName"));
+        f.setDescription((String) entity.get("description"));
+        f.setImage((String) entity.get("image"));
+        f.setPrice(Integer.parseInt((String) entity.get("price")));
+        foodItemRepo.save(f);
+        f.setRestaurantInfo(rest);
+        restaurantInfoRepo.save(rest);
+        return ResponseEntity.ok().body("success");
+    }
 }
