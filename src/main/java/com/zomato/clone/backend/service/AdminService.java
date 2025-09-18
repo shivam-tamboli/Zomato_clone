@@ -82,4 +82,10 @@ public class AdminService {
         return ResponseEntity.ok().body("success");
 
     }
+
+    public ResponseEntity<String> deleteRestaurant(Map entity){
+
+        restaurantInfoRepo.deleteById((Integer) entity.get("restaurantId"));
+        return ResponseEntity.ok().body("success");
+    }
 }
