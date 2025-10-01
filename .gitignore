@@ -25,6 +25,11 @@ Thumbs.db
 # Ignore the unwanted file/folder named "main" at repo root
 /main
 
+backend/.idea/
+backend/target/
+backend/main
+
+
 HELP.md
 
 
