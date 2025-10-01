@@ -33,3 +33,6 @@ backend/main
 HELP.md
 
 
+/backend/.idea/
+/backend/target/
+/backend/main
