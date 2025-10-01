@@ -20,19 +20,22 @@ Thumbs.db
 *.log
 
 # Node (if any)
-/node_modules/
+node_modules/
 
 # Ignore the unwanted file/folder named "main" at repo root
 /main
 
+# Backend ignores
 backend/.idea/
 backend/target/
 backend/main
 
+# Frontend ignores
+frontend/node_modules/
+frontend/build/
+frontend/dist/
+frontend/.env
+frontend/.idea/
+frontend/.vscode/
 
 HELP.md
-
-
-/backend/.idea/
-/backend/target/
-/backend/main
