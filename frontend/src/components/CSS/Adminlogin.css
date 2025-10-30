@@ -1,0 +1,211 @@
+/* Admin Login Styles - UPDATED */
+#Adlogback {
+    position: absolute;
+    background-image: url(../../../public/IMAGES/Adminback.jpg);
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+    height: 100%;
+    filter: blur(3px);
+    z-index: -1;
+}
+
+.AdminLogin {
+    position: relative;
+    max-height: 80vh;
+    overflow-y: auto;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 40px;
+    width: 90%;
+    max-width: 1200px;
+    margin: 50px auto;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+}
+
+#wcadmin {
+    color: #ff4757;
+    text-align: center;
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 3px solid #ff4757;
+}
+
+.restaurant {
+    padding: 25px;
+    margin-bottom: 30px;
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    display: flex;
+    background: white;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.restaurant:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+}
+
+.hotelimg {
+    height: 160px;
+    width: 160px;
+    border-radius: 10px;
+    object-fit: cover;
+    margin-right: 25px;
+    border: 3px solid white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.Arbg {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.resname {
+    color: #ff4757;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.restaurant-address {
+    color: #636e72;
+    font-size: 1rem;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.restaurant-address::before {
+    content: "📍";
+}
+
+#imggrp {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    overflow-x: auto;
+    padding: 10px 0;
+}
+
+.restaurant-image {
+    height: 80px;
+    width: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.resviewmenu, .resedit, .resdelet {
+    border: none;
+    outline: none;
+    background: linear-gradient(135deg, #ff4757, #ff3742);
+    height: 40px;
+    width: 140px;
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.resviewmenu {
+    background: linear-gradient(135deg, #28a745, #20c997);
+}
+
+.resedit {
+    background: linear-gradient(135deg, #17a2b8, #6f42c1);
+}
+
+.resviewmenu:hover {
+    background: linear-gradient(135deg, #20c997, #28a745);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+}
+
+.resedit:hover {
+    background: linear-gradient(135deg, #6f42c1, #17a2b8);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(111, 66, 193, 0.4);
+}
+
+.resdelet:hover {
+    background: linear-gradient(135deg, #ff3742, #ff4757);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 71, 87, 0.4);
+}
+
+#addRestaurant1, #addRestaurant2 {
+    border: none;
+    outline: none;
+    background: linear-gradient(135deg, #ff4757, #ff3742);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    height: 50px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0 30px;
+    margin: 15px;
+}
+
+#addRestaurant1:hover, #addRestaurant2:hover {
+    background: linear-gradient(135deg, #ff3742, #ff4757);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 71, 87, 0.4);
+}
+
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.stats-card {
+    background: linear-gradient(135deg, #ff4757, #ff3742);
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    min-width: 200px;
+}
+
+.stats-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.stats-label {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+#nores {
+    color: #ff4757;
+    text-align: center;
+    font-size: 1.5rem;
+    padding: 40px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}

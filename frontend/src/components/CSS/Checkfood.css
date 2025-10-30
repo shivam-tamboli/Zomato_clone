@@ -1,0 +1,155 @@
+/* Check Food Styles - UPDATED */
+.AdminCheckFood {
+    position: relative;
+    min-height: 100vh;
+    background: #f8f9fa;
+}
+
+#Checkwindow {
+    position: relative;
+    max-height: 700px;
+    overflow-y: auto;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 30px;
+    width: 90%;
+    max-width: 1000px;
+    margin: 40px auto;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.food-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.food-header h1 {
+    color: #ff4757;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.food-stats {
+    color: #636e72;
+    font-size: 1.1rem;
+}
+
+.restaurant1 {
+    padding: 25px;
+    margin-bottom: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    display: flex;
+    background: white;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.restaurant1:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.Checkfood {
+    height: 150px;
+    width: 150px;
+    border-radius: 10px;
+    object-fit: cover;
+    margin-right: 25px;
+    border: 3px solid white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.Arbg1 {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+#fooddata {
+    color: #ff4757;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.food-details {
+    color: #636e72;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.food-price {
+    color: #28a745;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.checkedit, .checkdelete {
+    border: none;
+    outline: none;
+    background: linear-gradient(135deg, #ff4757, #ff3742);
+    height: 40px;
+    width: 120px;
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.checkedit {
+    background: linear-gradient(135deg, #28a745, #20c997);
+}
+
+.checkedit:hover {
+    background: linear-gradient(135deg, #20c997, #28a745);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+}
+
+.checkdelete:hover {
+    background: linear-gradient(135deg, #ff3742, #ff4757);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 71, 87, 0.4);
+}
+
+#addFood1, #addFood2 {
+    border: none;
+    outline: none;
+    background: linear-gradient(135deg, #ff4757, #ff3742);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    height: 45px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0 25px;
+    margin: 10px;
+}
+
+#addFood1:hover, #addFood2:hover {
+    background: linear-gradient(135deg, #ff3742, #ff4757);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 71, 87, 0.4);
+}
+
+.header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
