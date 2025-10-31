@@ -35,7 +35,7 @@ class EditFooditem extends Component {
         };
 
         this.restaurantId = Number(restaurantId);
-        this.foodItemId = Number(foodItemId); // ✅ Ensure it's a number
+        this.foodItemId = Number(foodItemId);
     }
 
     handleInputChange = (e) => {
@@ -54,13 +54,13 @@ class EditFooditem extends Component {
             return;
         }
 
-        // ✅ FIX: Send data in EXACT format backend expects
+
         const foodData = {
-            fooditemid: this.foodItemId, // ✅ Must be number
-            restaurantId: this.restaurantId, // ✅ Must be number
+            fooditemid: this.foodItemId,
+            restaurantId: this.restaurantId,
             foodName: foodName,
             description: description,
-            price: Number(price), // ✅ Ensure it's a number, not string
+            price: Number(price),
             image: image || "default-food-image.jpg"
         };
 

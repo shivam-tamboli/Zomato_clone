@@ -13,7 +13,7 @@ class AdminLogin extends Component {
             error: null
         };
 
-        // 🔥 FIX: Bind the method in constructor instead of passing function
+
         this.handleRestaurantAdded = this.handleRestaurantAdded.bind(this);
     }
 
@@ -138,7 +138,7 @@ class AdminLogin extends Component {
                     {listOfRest.length === 0 ? (
                         <>
                             <p id="artext2">No restaurants available</p>
-                            {/* 🔥 FIX: Use regular Link without passing function */}
+                            {/*  FIX: Use regular Link without passing function */}
                             <Link to="/Addrestaurant">
                                 <button id="addRestaurant2">Add Restaurant</button>
                             </Link>
@@ -246,7 +246,7 @@ class AdminLogin extends Component {
                                     </div>
                                 );
                             })}
-                            {/* 🔥 FIX: Use regular Link without passing function */}
+                            {/* FIX: Use regular Link without passing function */}
                             <Link to="/Addrestaurant">
                                 <button id="addRestaurant1" style={{
                                     background: '#2196F3',

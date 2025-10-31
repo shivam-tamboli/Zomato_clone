@@ -41,7 +41,6 @@ public class UserService {
         userInfo.setName(signup.get("name"));
         userInfo.setPhoneNumber(signup.get("phonenumber"));
         userInfo.setSecretQuestion(signup.get("secretquestion"));
-        userInfo.setEmail(signup.get("email"));
         userInfo.setAddress(signup.get("address"));
         userInfo.setAnswer(signup.get("answer"));
         userInfo.setPassword(signup.get("password"));

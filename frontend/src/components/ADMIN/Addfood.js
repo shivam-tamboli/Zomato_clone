@@ -7,7 +7,7 @@ class AddFooditem extends Component {
     constructor(props){
         super(props);
 
-        // ✅ FIX: Add safety check for props
+
         const restaurantId = this.props.location?.state?.resid;
         console.log("Restaurant ID received:", restaurantId);
 
@@ -36,9 +36,9 @@ class AddFooditem extends Component {
         this.fooditem.description = document.getElementById("fooddescription").value;
         this.fooditem.price = document.getElementById("foodprice").value;
 
-        // ✅ FIX: Provide default image if none is set
+
         if (!this.fooditem.image) {
-            this.fooditem.image = "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop"; // Default food image
+            this.fooditem.image = "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop";
             console.log("No image provided, using default image");
         }
 
@@ -150,5 +150,5 @@ class AddFooditem extends Component {
     }
 }
 
-// ✅ FIX: Export with withRouter
+
 export default withRouter(AddFooditem);

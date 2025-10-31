@@ -4,6 +4,7 @@ import '../CSS/Signup.css'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import History from '../History'
+
 export class Signup extends Component {
   constructor(props) {
     super(props)
@@ -20,7 +21,7 @@ export class Signup extends Component {
       }
     }
   }
-  
+
   checkNum=(e)=>
   {
     if(Number(e.target.value)===0 && e.key==="0")
@@ -46,6 +47,7 @@ export class Signup extends Component {
     let secans=document.getElementById("signupans");
     let pass=document.getElementById("signuppass");
     let rpass=document.getElementById("signuprpass");
+
     if(fname.value==="" || lname.value==="" || Number(phnnum.value)<100000000 || secque.value==="Select Security Question" || add.value==="" || secans.value==="" || pass.value==="" || rpass.value==="" || pass.value!==rpass.value)
     {
       if(fname.value==="")
@@ -110,15 +112,33 @@ export class Signup extends Component {
       }
       return;
     }
-    History.push('/Login')
+
+
     axios.post("http://localhost:8080/zomato/user/signup",{
-      name:fname.value+" "+lname.value,
-      phonenumber:phnnum.value,
-      address:add.value,
-      secretquestion:secque.value,
-      answer:secans.value,
-      password:pass.value
-    }) 
+      name: fname.value + " " + lname.value,
+      phonenumber: phnnum.value,
+      address: add.value,
+      secretquestion: secque.value,
+      answer: secans.value,
+      password: pass.value
+    })
+        .then((response) => {
+          console.log("Signup response:", response.data);
+          if (response.data === "success") {
+            alert("Account created successfully!");
+            History.push('/Login');
+          } else if (response.data === "phone") {
+            document.getElementById("sf3").innerHTML = "Phone number already exists!";
+            phnnum.style.borderColor = "rgba(215,65,85)";
+            phnnum.style.borderWidth = "2px";
+          } else {
+            alert("Signup failed: " + response.data);
+          }
+        })
+        .catch((error) => {
+          console.error("Signup error:", error);
+          alert("Signup failed. Please try again.");
+        });
   }
 
   clear=()=>
@@ -164,54 +184,54 @@ export class Signup extends Component {
     sf7.innerHTML=""
     sf8.innerHTML=""
   }
+
   render() {
     return (
-      <div>
-        <Welcome/>
-        <div id="signupback">
+        <div>
+          <Welcome/>
+          <div id="signupback">
             <div id="signupwindow">
-                <div id="signupw1">
-                    <p id="signuphead">Signup</p>
-                    <Link to='/'><img src='../IMAGES/x.png' alt='Not Found' id="signupx"></img></Link>
-                </div>
-                <input type='text' id="signupfname" placeholder='First Name' onClick={this.clear} autocomplete="off"></input>
-                <p id="sf1"></p>
-                <input type='text' id="signuplname" placeholder='Last Name' onClick={this.clear} autocomplete="off"></input>
-                <p id="sf2"></p>
-                <input type='number' id="signupphone" placeholder='Phone' maxLength="10" onKeyDown={this.checkNum} onClick={this.clear} autocomplete="off"></input>
-                <p id="sf3"></p>
-                <input type='text' id="signupadd" placeholder='Address' onClick={this.clear} autocomplete="off"></input>
-                <p id="sf4"></p>
-                <select id="signupques" onClick={this.clear}>
-                  <option>Select Security Question</option>
-                  <option>What’s your favorite movie?</option>
-                  <option>What was your first car?</option>
-                  <option>What is your astrological sign?</option>
-                  <option>What city were you born in?</option>
-                  <option>What’s your favorite movie?</option>
-                </select>
-                <p id="sf5"></p>
-                <input type='text' placeholder='Security answer' id="signupans" onClick={this.clear} autocomplete="off"></input>
-                <p id="sf6"></p>
-                <input type='password' id="signuppass" placeholder='Password' onClick={this.clear} autocomplete="off"></input>
-                <p id="sf7"></p>
-                <input type='password' id="signuprpass" placeholder='Re-enter Password' onClick={this.clear} autocomplete="off"></input>
-                <p id="sf8"></p>
-                <div id="tc">
-                  <input type='checkbox' id="agree"></input>
-                  <label for="agree" id="agreetext">
+              <div id="signupw1">
+                <p id="signuphead">Signup</p>
+                <Link to='/'><img src='../IMAGES/x.png' alt='Not Found' id="signupx"></img></Link>
+              </div>
+              <input type='text' id="signupfname" placeholder='First Name' onClick={this.clear} autoComplete="off"></input>
+              <p id="sf1"></p>
+              <input type='text' id="signuplname" placeholder='Last Name' onClick={this.clear} autoComplete="off"></input>
+              <p id="sf2"></p>
+              <input type='number' id="signupphone" placeholder='Phone' maxLength="10" onKeyDown={this.checkNum} onClick={this.clear} autoComplete="off"></input>
+              <p id="sf3"></p>
+              <input type='text' id="signupadd" placeholder='Address' onClick={this.clear} autoComplete="off"></input>
+              <p id="sf4"></p>
+              <select id="signupques" onClick={this.clear}>
+                <option>Select Security Question</option>
+                <option>What's your favorite movie?</option>
+                <option>What was your first car?</option>
+                <option>What is your astrological sign?</option>
+                <option>What city were you born in?</option>
+              </select>
+              <p id="sf5"></p>
+              <input type='text' placeholder='Security answer' id="signupans" onClick={this.clear} autoComplete="off"></input>
+              <p id="sf6"></p>
+              <input type='password' id="signuppass" placeholder='Password' onClick={this.clear} autoComplete="off"></input>
+              <p id="sf7"></p>
+              <input type='password' id="signuprpass" placeholder='Re-enter Password' onClick={this.clear} autoComplete="off"></input>
+              <p id="sf8"></p>
+              <div id="tc">
+                <input type='checkbox' id="agree"></input>
+                <label htmlFor="agree" id="agreetext">
                   I agree to Zomato's <a href='http://www.zomato.com/policies/terms-of-service/' target='blank' className='agred'><span>Terms of Service, Privacy Policy</span></a> and<br></br>
                   <a href='http://www.zomato.com/policies/' className='agred' target='blank'><span>Content Policies</span></a>
-                  </label>
-                </div>
-                <input type='button' value="Create account" id="createacc" onClick={this.createAccount}></input>
-                <div id="ahacc">
-                    <p id="newline1">Already have an account?</p>
-                    <Link to="/Login" className='newline2link'><p id="newline2">Log in</p></Link>
-                </div>
+                </label>
+              </div>
+              <input type='button' value="Create account" id="createacc" onClick={this.createAccount}></input>
+              <div id="ahacc">
+                <p id="newline1">Already have an account?</p>
+                <Link to="/Login" className='newline2link'><p id="newline2">Log in</p></Link>
+              </div>
             </div>
+          </div>
         </div>
-      </div>
     )
   }
 }

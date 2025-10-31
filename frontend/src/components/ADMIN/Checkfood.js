@@ -16,7 +16,7 @@ class AdminCheckFood extends Component {
         this.fetchFoodItems();
     }
 
-    // ✅ FIX: Create separate method to avoid infinite loop
+
     fetchFoodItems = () => {
         axios.get("http://localhost:8080/zomato/get-fooditems", {
             params: this.obj
@@ -30,18 +30,7 @@ class AdminCheckFood extends Component {
             })
     }
 
-    // ❌ REMOVE or FIX this method to prevent infinite loop
-    // componentDidUpdate(){
-    //     axios.get("http://localhost:8080/zomato/get-fooditems", {
-    //         params: this.obj
-    //     })
-    //     .then((resp)=>{
-    //         this.setState({listOfFoods: resp.data});
-    //     })
-    //     .catch((err)=>{
-    //         console.error("Error updating food items:", err);
-    //     })
-    // }
+
 
     addFood = (e) => {
         this.props.history.push({
@@ -71,7 +60,7 @@ class AdminCheckFood extends Component {
             return;
         }
 
-        // ✅ Try sending as string to avoid casting issues
+
         axios.post("http://localhost:8080/zomato/admin/delete-fooditems", {
             foodItemId: String(foodItemId)  // Convert to string
         })

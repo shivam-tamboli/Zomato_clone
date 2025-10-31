@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { withRouter } from 'react-router-dom'; // 🔥 ADD THIS IMPORT
+import { withRouter } from 'react-router-dom';
 import '../CSS/Addres.css'
 
 class Addrestaurant extends Component {
@@ -42,7 +42,7 @@ class Addrestaurant extends Component {
             .then((resp) => {
                 console.log("Success:", resp.data);
 
-                // Clear form
+
                 document.getElementById('restaurantname').value = "";
                 document.getElementById('restaurantaddress').value = "";
                 document.getElementById('enterImage').value = "";
@@ -51,7 +51,7 @@ class Addrestaurant extends Component {
 
                 alert("Restaurant added successfully!");
 
-                // Navigate back to Admin
+
                 this.props.history.push("/Admin");
 
             })
@@ -166,5 +166,5 @@ class Addrestaurant extends Component {
     }
 }
 
-// Export with withRouter
+
 export default withRouter(Addrestaurant);
