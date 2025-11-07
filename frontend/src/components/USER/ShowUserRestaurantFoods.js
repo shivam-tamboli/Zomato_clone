@@ -3,43 +3,47 @@ import axios from 'axios';
 import '../CSS/Showusrrf.css'
 
 export default class ShowUserRestaurantFoods extends Component {
-    constructor(props) {
+    constructor(props){
         super(props);
 
         console.log("=== SHOW USER RESTAURANT FOODS CONSTRUCTOR ===");
-        console.log("All props:", props);
         console.log("Location state:", props.location?.state);
 
-        // 🛠 FIX: Safely extract data with comprehensive fallbacks
-        const locationState = props.location?.state || {};
-        const orddata = locationState.orddata || {};
+        // 🛠 FIX: Safe data extraction
+        const state = props.location?.state || {};
+        const orddata = state.orddata || {};
 
         this.restaurantname = orddata.restaurantname || "Unknown Restaurant";
+        this.userPhoneNumber = state.phonenum || orddata.phonenumber || '';
 
-        // 🛠 FIX: Comprehensive phone number extraction
-        this.userPhoneNumber = locationState.phonenum ||
-            orddata.phonenumber ||
-            localStorage.getItem('userPhoneNumber') ||
-            '';
+        // 🛠 FIX: Set restaurantId directly, not as obj
+        this.restaurantId = orddata.restaurantid;
 
-        this.obj = { restaurantid: orddata.restaurantid || "" };
-
-        console.log("CHECK - Extracted Data:", {
+        console.log("📥 Extracted data:", {
+            restaurantId: this.restaurantId,
             restaurantname: this.restaurantname,
-            userPhoneNumber: this.userPhoneNumber,
-            restaurantid: this.obj.restaurantid,
-            phonenumFromState: locationState.phonenum,
-            phonenumFromOrddata: orddata.phonenumber
+            userPhoneNumber: this.userPhoneNumber
         });
 
-        this.state = {
-            listOfFoods: null,
-            error: null,
-            loading: true
-        };
+        // Initialize state based on whether we have data
+        if (!this.restaurantId) {
+            console.error("❌ No restaurant ID found");
+            this.state = {
+                error: "No restaurant data provided. Please go back and select a restaurant.",
+                loading: false,
+                listOfFoods: []
+            };
+        } else {
+            this.state = {
+                loading: true,
+                listOfFoods: null,
+                error: null
+            };
+        }
 
+        // 🛠 FIX: Initialize order object safely
         this.order = {
-            restaurantid: this.obj.restaurantid,
+            restaurantid: this.restaurantId,
             restaurantname: this.restaurantname,
             phonenumber: this.userPhoneNumber,
             deliveryaddress: null,
@@ -52,88 +56,69 @@ export default class ShowUserRestaurantFoods extends Component {
     }
 
     componentDidMount() {
-        if (!this.obj.restaurantid) {
+        console.log("🍽️ COMPONENT DID MOUNT");
+
+        // 🛠 FIX: Check if we have restaurantId before making API call
+        if (!this.restaurantId) {
+            console.error("Cannot fetch foods: No restaurant ID");
             this.setState({
-                error: "No restaurant ID provided",
+                error: "Cannot load menu. Restaurant information is missing.",
                 loading: false
             });
             return;
         }
 
-        axios.post("http://localhost:8080/zomato/user/get-fooditems", this.obj)
-            .then((resp) => {
-                console.log("Raw food items response:", resp.data);
+        // 🛠 FIX: Use the correct request format
+        const requestData = {
+            restaurantid: this.restaurantId
+        };
 
-                // 🛠 FIX: Transform backend camelCase to frontend lowercase
-                const transformedFoods = resp.data.map(food => ({
-                    fooditemid: food.foodItemId,
-                    foodname: food.foodName,
-                    description: food.description,
-                    price: food.price,
-                    image: food.image,
-                    fooditemrating: food.foodItemRating,
-                    // Keep original for debugging
-                    _original: food
-                }));
+        console.log("📤 Fetching foods for restaurant:", requestData);
 
-                console.log("Transformed food items:", transformedFoods);
+        axios.post("http://localhost:8080/zomato/user/get-fooditems", requestData)
+            .then((resp)=>{
+                console.log("✅ Food items response:", resp.data);
 
-                this.setState({
-                    listOfFoods: transformedFoods && transformedFoods.length > 0 ? transformedFoods : [],
-                    loading: false
-                });
+                if(resp.data && resp.data.length > 0){
+                    this.setState({
+                        listOfFoods: resp.data,
+                        loading: false
+                    });
+                } else {
+                    this.setState({
+                        listOfFoods: [],
+                        loading: false,
+                        error: "No food items available for this restaurant."
+                    });
+                }
             })
-            .catch((err) => {
-                console.error("Error fetching food items:", err);
+            .catch((err)=>{
+                console.error("❌ Error fetching food items:", err);
                 this.setState({
-                    error: "Failed to load food items",
+                    error: "Failed to load food items. Please try again.",
                     loading: false
                 });
             });
     }
 
-    // 🛠 FIX: Better image error handling with data URL fallback
-    handleImageError = (e) => {
-        console.log("Image failed to load, using fallback");
-        // Create a simple colored placeholder
-        const canvas = document.createElement('canvas');
-        canvas.width = 300;
-        canvas.height = 200;
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#f0f0f0';
-        ctx.fillRect(0, 0, 300, 200);
-        ctx.fillStyle = '#ccc';
-        ctx.font = '16px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText('Image Not Available', 150, 100);
-        e.target.src = canvas.toDataURL();
-    };
-
     orderFoods = (e) => {
         if (!this.state.listOfFoods || this.state.listOfFoods.length === 0) {
-            console.log("No food items available to order");
             alert("No food items available to order");
             return;
         }
 
+        // Reset order arrays
         this.order.fooditemid = [];
         this.order.foodname = [];
         this.order.amount = [];
         this.order.quantity = [];
 
+        // Collect selected items
         this.state.listOfFoods.forEach((value, index) => {
             const checkbox = document.getElementById('select' + index);
             if (checkbox && checkbox.checked === true) {
-                // 🛠 FIX: Now using transformed lowercase field names
-                const foodId = value.fooditemid;
-
-                if (foodId === undefined || foodId === null) {
-                    console.error("Invalid fooditemid for item:", value);
-                    return;
-                }
-
-                this.order.fooditemid.push(String(foodId));
-                this.order.foodname.push(String(value.foodname || "Unknown Food"));
+                this.order.fooditemid.push(String(value.fooditemid || value.foodItemId));
+                this.order.foodname.push(String(value.foodname || value.foodName));
                 this.order.amount.push(String(value.price));
                 this.order.quantity.push("1");
             }
@@ -144,14 +129,9 @@ export default class ShowUserRestaurantFoods extends Component {
             return;
         }
 
-        console.log("Final order data:", this.order);
+        console.log("📦 Final order data:", this.order);
 
-        // 🛠 FIX: Ensure phone number is included
-        if (!this.order.phonenumber) {
-            this.order.phonenumber = this.userPhoneNumber;
-        }
-
-        // 🛠 FIX: Use this.props.history.push for navigation
+        // Navigate to place order
         this.props.history.push({
             pathname: "/Placeorder",
             state: {
@@ -159,7 +139,7 @@ export default class ShowUserRestaurantFoods extends Component {
                 phonenum: this.userPhoneNumber
             }
         });
-    }
+    };
 
     back = () => {
         this.props.history.push({
@@ -168,31 +148,23 @@ export default class ShowUserRestaurantFoods extends Component {
                 phonenum: this.userPhoneNumber
             }
         });
-    }
+    };
 
     render() {
-        const { error, loading, listOfFoods } = this.state;
+        const { listOfFoods, loading, error } = this.state;
 
-        // 🛠 FIX: Better error handling for missing data
-        if (!this.props.location.state || !this.props.location.state.orddata) {
-            return (
-                <div className='AdminCheckFood'>
-                    <h2>Error: No restaurant data provided</h2>
-                    <button onClick={this.back}>Go Back to Restaurants</button>
-                </div>
-            );
-        }
-
+        // Show error state
         if (error) {
             return (
                 <div className='AdminCheckFood'>
-                    <h1>{this.restaurantname}</h1>
-                    <p>Error: {error}</p>
-                    <button onClick={this.back}>Go Back</button>
+                    <h1>Menu</h1>
+                    <p>{error}</p>
+                    <button onClick={this.back}>← Go Back to Restaurants</button>
                 </div>
             );
         }
 
+        // Show loading state
         if (loading) {
             return (
                 <div className='AdminCheckFood'>
@@ -202,53 +174,41 @@ export default class ShowUserRestaurantFoods extends Component {
             );
         }
 
+        // Show no foods state
         if (!listOfFoods || listOfFoods.length === 0) {
             return (
                 <div className='AdminCheckFood'>
                     <h1>{this.restaurantname}</h1>
-                    <p>No Foods Available for this restaurant</p>
-                    <button onClick={this.back}>Go Back to Restaurants</button>
+                    <p>No food items available</p>
+                    <button onClick={this.back}>← Go Back to Restaurants</button>
                 </div>
             );
         }
 
+        // Show foods list
         return (
             <>
                 <div id="Adlogback"></div>
                 <div id="Admintag">
-                    <img
-                        src='../IMAGES/Userpic.png'
-                        alt='User profile'
-                        onError={this.handleImageError}
-                    />
+                    <img src='../IMAGES/Userpic.png' alt='User profile' onClick={this.back}></img>
                     <p>USER</p>
                 </div>
-                <img
-                    src="../IMAGES/Home.png"
-                    alt="Home"
-                    className='Home'
-                    onClick={this.back}
-                    onError={this.handleImageError}
-                />
+                <img src="../IMAGES/Home.png" alt="Home" className='Home' onClick={this.back}></img>
                 <div className='Addmorewindow'>
                     <h1 id="artext6">Restaurant : {this.restaurantname}</h1>
                     <div className='SMFlist'>
                         {listOfFoods.map((value, index) => (
-                            <div className="restaurant1" key={value.fooditemid || index} id={value.fooditemid}>
+                            <div className="restaurant1" key={value.fooditemid || value.foodItemId || index}
+                                 id={value.fooditemid || value.foodItemId}>
                                 <div id="fooddata">
-                                    <p>Dish : {value.foodname}</p>
+                                    <p>Dish : {value.foodname || value.foodName}</p>
                                     <p>Price : Rs.{value.price}/-</p>
                                     <p className='Description'>Description : {value.description}</p>
                                     <p>Rating : {value.fooditemrating ? value.fooditemrating.toPrecision(2) + " / 5" : "No ratings"}</p>
                                 </div>
-                                <img
-                                    src={value.image || '../IMAGES/placeholder-food.jpg'}
-                                    alt={value.foodname}
-                                    className='Checkfood'
-                                    onError={this.handleImageError}
-                                />
+                                <img src={value.image} alt={value.foodname || value.foodName} className='Checkfood'></img>
                                 <label htmlFor={'select' + index} id="selectfood">Select</label>
-                                <input type="checkbox" id={'select' + index} className='selectedfoodc'/>
+                                <input type="checkbox" id={'select' + index} className='selectedfoodc'></input>
                             </div>
                         ))}
                         <button id='orderFoods' onClick={this.orderFoods}>Order Foods</button>
