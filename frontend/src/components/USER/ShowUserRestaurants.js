@@ -8,30 +8,12 @@ export default class ShowUserRestaurants extends Component {
         super(props);
 
         console.log("=== SHOW USER RESTAURANTS CONSTRUCTOR ===");
-        console.log("All props:", props);
+        console.log("Props:", props);
         console.log("Location state:", props.location?.state);
 
-        // 🛠 FIX: Comprehensive phone number extraction with validation
-        let extractedPhone = '';
+        this.userPhoneNumber = props.location?.state?.phonenum || '';
 
-        if (props.location?.state?.phonenum) {
-            extractedPhone = props.location.state.phonenum;
-        } else if (localStorage.getItem('userPhoneNumber')) {
-            extractedPhone = localStorage.getItem('userPhoneNumber');
-        } else {
-            console.warn("No phone number found in props or localStorage");
-        }
-
-        this.userPhoneNumber = extractedPhone;
-
-        console.log("Extracted phone number:", this.userPhoneNumber);
-
-        // 🛠 FIX: Save to localStorage for recovery
-        if (this.userPhoneNumber && this.userPhoneNumber.trim() !== "") {
-            localStorage.setItem('userPhoneNumber', this.userPhoneNumber);
-        } else {
-            console.error("🚨 CRITICAL: Phone number is empty!");
-        }
+        console.log("User phone number:", this.userPhoneNumber);
 
         this.state = {
             listOfRest: [],
@@ -46,7 +28,7 @@ export default class ShowUserRestaurants extends Component {
 
         axios.get("http://localhost:8080/zomato/user/get-all-restaurants")
             .then((resp)=>{
-                console.log("API Response:", resp);
+                console.log("API Response:", resp.data);
 
                 const transformedRestaurants = resp.data.map(restaurant => ({
                     restaurantid: restaurant.restaurantId,
@@ -58,11 +40,18 @@ export default class ShowUserRestaurants extends Component {
 
                 console.log("Transformed restaurants:", transformedRestaurants);
 
-                this.setState({
-                    listOfRest: transformedRestaurants && transformedRestaurants.length > 0 ? transformedRestaurants : [],
-                    allRestaurants: transformedRestaurants && transformedRestaurants.length > 0 ? transformedRestaurants : [],
-                    loading: false
-                });
+                if(transformedRestaurants.length > 0){
+                    this.setState({
+                        listOfRest: transformedRestaurants,
+                        allRestaurants: transformedRestaurants,
+                        loading: false
+                    });
+                } else {
+                    this.setState({
+                        loading: false,
+                        error: "No restaurants found"
+                    });
+                }
             })
             .catch((err)=>{
                 console.log("Error fetching restaurants:", err);
@@ -70,66 +59,44 @@ export default class ShowUserRestaurants extends Component {
                     error: "Failed to load restaurants",
                     loading: false
                 });
-            })
+            });
     }
 
-    // 🛠 FIX: Better image error handling with data URL fallback
-    handleImageError = (e) => {
-        console.log("Restaurant image failed to load, using fallback");
-        // Create a simple colored placeholder
-        const canvas = document.createElement('canvas');
-        canvas.width = 200;
-        canvas.height = 150;
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#e0e0e0';
-        ctx.fillRect(0, 0, 200, 150);
-        ctx.fillStyle = '#999';
-        ctx.font = '14px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText('Restaurant Image', 100, 75);
-        e.target.src = canvas.toDataURL();
-    };
-
     checkFoods = (restaurant) => {
-        console.log("🔄 Navigating to menu for restaurant:", restaurant);
-        console.log("📤 Current phone number:", this.userPhoneNumber);
+        console.log("🎯 Simple navigation test");
 
-        // 🛠 FIX: Validate phone number before navigation
-        if (!this.userPhoneNumber || this.userPhoneNumber.trim() === "") {
-            console.error("Cannot navigate: Phone number is empty");
-            alert("Error: User information missing. Please login again.");
-            return;
-        }
-
-        let obj = {
+        // Simple data object
+        const navigationData = {
             restaurantname: restaurant.restaurantname,
             phonenumber: this.userPhoneNumber,
             restaurantid: restaurant.restaurantid
-        }
+        };
 
-        console.log("📤 Navigation object:", obj);
-        console.log("📤 Phone number being passed:", this.userPhoneNumber);
+        console.log("📤 Sending:", navigationData);
 
+        // Simple navigation
         this.props.history.push({
-            pathname: "/Addmore",
+            pathname: "/Userfoods",
             state: {
-                orddata: obj,
-                phonenum: this.userPhoneNumber  // 🛠 FIX: Explicitly pass
+                orddata: navigationData,
+                phonenum: this.userPhoneNumber
             }
-        })
-    }
+        });
+    };
 
     searchRestaurants = (e) => {
-        const searchValue = document.getElementById('searchRestaurants').value;
+        const searchValue = e.target.value;
         console.log("Searching for:", searchValue);
 
-        if (searchValue.trim() === "") {
-            this.setState({ listOfRest: this.state.allRestaurants });
+        if(searchValue.trim() === ""){
+            this.setState({listOfRest: this.state.allRestaurants});
             return;
         }
 
         axios.post("http://localhost:8080/zomato/user/search-by-name", {"search": searchValue})
             .then((resp)=>{
+                console.log("Search results:", resp.data);
+
                 const transformedResults = resp.data.map(restaurant => ({
                     restaurantid: restaurant.restaurantId,
                     restaurantname: restaurant.restaurantName,
@@ -138,18 +105,16 @@ export default class ShowUserRestaurants extends Component {
                     restaurantimages: restaurant.restaurantImages || []
                 }));
 
-                this.setState({ listOfRest: transformedResults });
+                this.setState({listOfRest: transformedResults});
             })
             .catch((err)=>{
                 console.log("Search error:", err);
-                // 🛠 FIX: Don't clear results on search error
-                this.setState({ listOfRest: this.state.allRestaurants });
-            })
-    }
+                this.setState({listOfRest: this.state.allRestaurants});
+            });
+    };
 
     render() {
         const { listOfRest, loading, error } = this.state;
-        console.log("Current restaurants in state:", listOfRest);
 
         if (loading) {
             return (
@@ -209,32 +174,21 @@ export default class ShowUserRestaurants extends Component {
                                             <button
                                                 className='usrvmenub'
                                                 onClick={() => this.checkFoods(restaurant)}
-                                                name={restaurant.restaurantname}
-                                                id={'v' + restaurant.restaurantid}
                                             >
                                                 View menu
                                             </button>
                                             <div id="imggrp1">
                                                 {
-                                                    restaurant.restaurantimages && restaurant.restaurantimages.length > 0 ? (
-                                                        restaurant.restaurantimages.map((image) => (
+                                                    restaurant.restaurantimages && restaurant.restaurantimages.map((image) => {
+                                                        return(
                                                             <img
                                                                 src={image.link}
                                                                 key={image.imageId || image.imageid}
                                                                 alt={restaurant.restaurantname}
                                                                 className='Checkfood1'
-                                                                onError={this.handleImageError}
                                                             />
-                                                        ))
-                                                    ) : (
-                                                        // 🛠 FIX: Show placeholder when no images
-                                                        <img
-                                                            src="../IMAGES/placeholder-restaurant.jpg"
-                                                            alt={restaurant.restaurantname}
-                                                            className='Checkfood1'
-                                                            onError={this.handleImageError}
-                                                        />
-                                                    )
+                                                        );
+                                                    })
                                                 }
                                             </div>
                                         </div>
