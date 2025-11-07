@@ -1,130 +1,313 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import axios from 'axios';
-import '../CSS/Orderhis.css'
-import History from '../History';
+import '../CSS/UserOrders.css';
+
 export default class UserOrders extends Component {
+    constructor(props) {
+        super(props);
 
-  constructor(props){
-    super(props);
-    this.userPhoneNumber = this.props.location.state.phonenum;  // Demo String   // this.props.userPhoneNumber
-    console.log(this.userPhoneNumber    )
-    this.state = {obj : []};
-  }
+        console.log("📦 USER ORDERS CONSTRUCTOR");
+        console.log("Props:", props);
+        console.log("Location state:", props.location?.state);
 
-  rateOrder = (e) =>{
+        const locationState = props.location?.state || {};
+        this.userPhoneNumber = locationState.phonenum ||
+            localStorage.getItem('userPhoneNumber') ||
+            '';
 
-    if(this.state.obj[e.target.parentNode.id.substring(e.target.parentNode.id.length, 5)].orderflag === '1'){
-        alert("Already Rated");
-    }else{
-        History.push({
-            pathname:"/Rate",
-            state:{
-                obj:this.state.obj[e.target.parentNode.id.substring(e.target.parentNode.id.length, 5)],
-                phonenum:this.userPhoneNumber
-            }
-        })
-        console.log("Redirect to rating page with props given below");
-        console.log(this.state.obj[e.target.parentNode.id.substring(e.target.parentNode.id.length, 5)]);
-        // this.state.obj[e.target.parentNode.id.substring(e.target.parentNode.id.length, 5)] & this.userPhoneNumber
-    }
-  }
+        console.log("📱 User phone number:", this.userPhoneNumber);
 
-  componentDidMount(){
-    console.log(typeof(this.userPhoneNumber))
-    axios.post("http://localhost:8080/zomato/user/get-all-order-details", {phonenumber : this.userPhoneNumber})
-    .then((resp)=>{
-      this.setState({obj : resp.data});
-    })
-    .catch((err)=>{
-      console.log(err);
-    })
-  }
-
-  back=()=>
-    {
-        History.push({
-            pathname:"/User",
-            state:{
-                phonenum:this.userPhoneNumber
-            }
-        })
+        this.state = {
+            orders: [],
+            loading: true,
+            error: null
+        };
     }
 
-  render() {
-    if(this.state.obj.length === 0){
-      return (
-        <>
-        <div id="Adlogback"></div>
-        <div id="Admintag">
-            <img src='../IMAGES/Userpic.png' alt='Not found' onClick={this.back}></img>
-            <p>USER</p>
-        </div>
-        <img src="../IMAGES/Home.png" alt="Not found" className='Home' onClick={this.back}></img>
-        <div className='ordback'>
-            <h1 id="arhead">Your History</h1>
-        <div className='UserOrders'>
-          <p id="nrp">No Orders Placed</p>
-        </div>
-        </div>
-        </>
-      )
-    }else{
-      return (
-        <>
-        <div id="Adlogback"></div>
-        <div id="Admintag">
-            <img src='../IMAGES/Userpic.png' alt='Not found' onClick={this.back}></img>
-            <p>USER</p>
-        </div>
-        <img src="../IMAGES/Home.png" alt="Not found" className='Home' onClick={this.back}></img>
-        <div className='ordback'>
-            <h1 id="arhead">Your History</h1>
-        <div className='UserOrders'>
-         {
-          this.state.obj.map((value, index)=>{
-            
-            return(
-              <div className='Order' key={index} id={'order'+index}>
-                <h3>Order ID : {value.orderid}</h3>
-                <h4>Order from Restaurant : {value.restaurantname}</h4>
-                <h4>Order Deliverd on : {value.deliveryaddress}</h4>
-                <div>
-                  <h4>Order Details</h4>
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Food Name</th>
-                        <th>Quantity</th>
-                        <th>Amount</th>
-                        <th>Total</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {
-                        value.orderFoodItems.map((food,i)=>{
-                          return(
-                            <tr key={i}>
-                              <td>{food.foodname}</td>
-                              <td>{food.quantity}</td>
-                              <td>{food.amount}</td>
-                              <td>{parseInt(food.quantity) * parseInt(food.amount)}</td>
-                            </tr>
-                          );
-                        })
-                      }
-                      </tbody>
-                  </table>
-                  <h4>Order Amount : {value.totalamount}</h4>
-                </div>
-                <button onClick={this.rateOrder} className='Rateb'>Rate This Order</button>
-              </div>
+    componentDidMount() {
+        this.fetchUserOrders();
+    }
+
+    fetchUserOrders = async () => {
+        if (!this.userPhoneNumber) {
+            console.error("❌ No phone number available");
+            this.setState({
+                error: "User information not found. Please login again.",
+                loading: false
+            });
+            return;
+        }
+
+        try {
+            console.log("📥 Fetching orders for phone:", this.userPhoneNumber);
+
+            const response = await axios.post(
+                "http://localhost:8080/zomato/user/get-all-order-details",
+                { phonenumber: this.userPhoneNumber },
+                {
+                    timeout: 10000,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
             );
-          })
-         }
-        </div>
-        </div>
-        </>
-      )
-    }
-  }
+
+            console.log("📥 Full API Response:", response);
+            console.log("📥 Response status:", response.status);
+            console.log("📥 Response data:", response.data);
+
+            if (!response.data) {
+                console.warn("⚠️ Response data is empty or null");
+                this.setState({
+                    orders: [],
+                    loading: false
+                });
+                return;
+            }
+
+            let ordersData = response.data;
+            if (typeof ordersData === 'object' && !Array.isArray(ordersData)) {
+                console.warn("⚠️ Response is object, converting to array");
+                ordersData = [ordersData];
+            }
+
+            const transformedOrders = ordersData.map((order, index) => {
+                console.log(`🔍 Processing order ${index}:`, order);
+
+                return {
+                    orderId: order.orderId || order.orderid || `temp-${index}`,
+                    restaurantId: order.restaurantId || order.restaurantid,
+                    restaurantName: order.restaurantName || order.restaurantname || "Unknown Restaurant",
+                    totalAmount: order.totalAmount || order.totalamount || 0,
+                    deliveryAddress: order.deliveryAddress || order.deliveryaddress || "Not specified",
+                    orderFlag: this.getOrderFlagText(order.orderFlag),
+                    foodItems: order.orderFoodItems || order.foodItems || order.fooditems || []
+                };
+            });
+
+            console.log("📥 Transformed orders:", transformedOrders);
+
+            this.setState({
+                orders: transformedOrders,
+                loading: false,
+                error: null
+            });
+
+        } catch (error) {
+            console.error("❌ Error fetching orders:", error);
+
+            let errorMessage = "Failed to load orders. Please try again.";
+
+            if (error.code === 'ECONNABORTED') {
+                errorMessage = "Request timeout. Please check your connection.";
+            } else if (error.response) {
+                console.error("❌ Server error response:", error.response);
+                errorMessage = `Server error: ${error.response.status} - ${error.response.statusText}`;
+
+                if (error.response.status === 404) {
+                    errorMessage = "Orders endpoint not found. Please check backend.";
+                } else if (error.response.status === 500) {
+                    errorMessage = "Server error. Please try again later.";
+                }
+            } else if (error.request) {
+                console.error("❌ No response received:", error.request);
+                errorMessage = "No response from server. Please check if backend is running.";
+            }
+
+            this.setState({
+                error: errorMessage,
+                loading: false,
+                orders: []
+            });
+        }
+    }
+
+    getOrderFlagText = (orderFlag) => {
+        switch (orderFlag) {
+            case 0: return "PENDING";
+            case 1: return "DELIVERED";
+            case 2: return "CANCELLED";
+            case 3: return "PROCESSING";
+            default: return "PENDING";
+        }
+    }
+
+    retryFetchOrders = () => {
+        this.setState({ loading: true, error: null });
+        this.fetchUserOrders();
+    }
+
+    rateOrder = (order) => {
+        console.log("⭐ Rating order:", order);
+
+        const orderForRating = {
+            orderid: order.orderId,
+            orderId: order.orderId,
+            restaurantid: order.restaurantId,
+            restaurantId: order.restaurantId,
+            restaurantname: order.restaurantName,
+            restaurantName: order.restaurantName,
+            orderFoodItems: order.foodItems ? order.foodItems.map(item => ({
+                foodItemId: item.foodItemId || item.fooditemid || item.id,
+                fooditemid: item.foodItemId || item.fooditemid || item.id,
+                foodName: item.foodName || item.foodname || "Unknown Food",
+                foodname: item.foodName || item.foodname || "Unknown Food",
+                quantity: item.quantity || 1,
+                amount: item.amount || 0
+            })) : []
+        };
+
+        console.log("📤 Transformed order for rating:", orderForRating);
+
+        this.props.history.push({
+            pathname: "/Rate",
+            state: {
+                obj: orderForRating,
+                phonenum: this.userPhoneNumber
+            }
+        });
+    }
+
+    viewOrderDetails = (order) => {
+        console.log("👀 Viewing order details:", order);
+        alert(`Order Details:\nRestaurant: ${order.restaurantName}\nTotal: ₹${order.totalAmount}\nStatus: ${order.orderFlag}`);
+    }
+
+    navigateToRestaurants = () => {
+        this.props.history.push({
+            pathname: "/Userrestaurant",
+            state: {
+                phonenum: this.userPhoneNumber
+            }
+        });
+    }
+
+    navigateToHome = () => {
+        this.props.history.push("/");
+    }
+
+    render() {
+        const { orders, loading, error } = this.state;
+
+        if (loading) {
+            return (
+                <div className="user-orders-container">
+                    <div className="loading-message">
+                        <h2>Loading your orders...</h2>
+                        <p>Please wait while we fetch your order history.</p>
+                        <div className="loading-spinner"></div>
+                    </div>
+                </div>
+            );
+        }
+
+        if (error) {
+            return (
+                <div className="user-orders-container">
+                    <div className="error-message">
+                        <h2>Error</h2>
+                        <p>{error}</p>
+                        <div className="error-actions">
+                            <button onClick={this.retryFetchOrders} className="retry-btn">
+                                🔄 Try Again
+                            </button>
+                            <button onClick={this.navigateToHome} className="home-btn">
+                                🏠 Go to Home
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        if (orders.length === 0) {
+            return (
+                <div className="user-orders-container">
+                    <div className="no-orders-message">
+                        <h2>No Orders Found</h2>
+                        <p>You haven't placed any orders yet.</p>
+                        <button onClick={this.navigateToRestaurants} className="order-now-btn">
+                            🍕 Order Now
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+
+        return (
+            <div className="user-orders-container">
+                <header className="orders-header">
+                    <button onClick={this.navigateToHome} className="back-btn">
+                        ← Home
+                    </button>
+                    <h1>Your Orders</h1>
+                    <button onClick={this.navigateToRestaurants} className="new-order-btn">
+                        + New Order
+                    </button>
+                </header>
+
+                <div className="orders-list">
+                    {orders.map((order, index) => {
+                        console.log(`Order ${index} data:`, order);
+                        return (
+                            <div key={order.orderId || index} className="order-card">
+                                <div className="order-header">
+                                    <h3>Order #{order.orderId}</h3>
+                                    <span className={`order-status ${order.orderFlag?.toLowerCase()}`}>
+                                        {order.orderFlag || "PENDING"}
+                                    </span>
+                                </div>
+
+                                <div className="order-details">
+                                    <p className="restaurant-name">
+                                        <strong>Restaurant:</strong> {order.restaurantName}
+                                    </p>
+                                    <p className="delivery-address">
+                                        <strong>Delivery to:</strong> {order.deliveryAddress}
+                                    </p>
+                                    <p className="total-amount">
+                                        <strong>Total:</strong> ₹{order.totalAmount}
+                                    </p>
+
+                                    <div className="food-items">
+                                        <strong>Items:</strong>
+                                        <ul>
+                                            {order.foodItems && order.foodItems.length > 0 ? (
+                                                order.foodItems.map((item, itemIndex) => (
+                                                    <li key={itemIndex}>
+                                                        {item.foodName || "Unknown Item"}
+                                                        (Qty: {item.quantity || 1})
+                                                        - ₹{item.amount || 0}
+                                                    </li>
+                                                ))
+                                            ) : (
+                                                <li>No items details available</li>
+                                            )}
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div className="order-actions">
+                                    {order.orderFlag === "DELIVERED" && (
+                                        <button
+                                            onClick={() => this.rateOrder(order)}
+                                            className="rate-btn"
+                                        >
+                                            ⭐ Rate Order
+                                        </button>
+                                    )}
+                                    <button
+                                        onClick={() => this.viewOrderDetails(order)}
+                                        className="details-btn"
+                                    >
+                                        📋 View Details
+                                    </button>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+        );
+    }
 }

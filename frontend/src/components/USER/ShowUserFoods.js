@@ -2,19 +2,19 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import '../CSS/Showuserfood.css';
 import UserLogin from './UserLogin';
-import History from '../History';
+import { withRouter } from 'react-router-dom';
 
 class ShowUserFoods extends Component {
     constructor(props) {
         super(props);
 
-        // GET DATA FROM URL PARAMETERS
-        const urlParams = new URLSearchParams(window.location.search);
-        this.restaurantId = urlParams.get('restaurantId');
-        this.userPhoneNumber = urlParams.get('phonenum');
+        // ✅ FIX: Get data from React Router props, NOT URL parameters
+        const locationState = this.props.location?.state || {};
+        this.restaurantId = locationState.restaurantId;
+        this.userPhoneNumber = locationState.phonenum;
 
-        console.log("Restaurant ID from URL:", this.restaurantId);
-        console.log("User Phone from URL:", this.userPhoneNumber);
+        console.log("Restaurant ID from PROPS:", this.restaurantId);
+        console.log("User Phone from PROPS:", this.userPhoneNumber);
 
         this.state = {
             listOfFoods: [],
@@ -25,10 +25,13 @@ class ShowUserFoods extends Component {
     componentDidMount() {
         console.log("PROPS IN DID MOUNT:", this.props);
 
-        // If no restaurantId from URL, show error
-        if (!this.restaurantId) {
-            console.error("No restaurantId provided in URL");
-            this.setState({ loading: false });
+        // ✅ FIX: Check if we have required data - if not, redirect to restaurant list
+        if (!this.restaurantId || !this.userPhoneNumber) {
+            console.error("Missing required data. Redirecting to restaurant list...");
+            this.props.history.push({
+                pathname: "/Userrestaurant",
+                state: { phonenum: this.userPhoneNumber }
+            });
             return;
         }
 
@@ -36,12 +39,18 @@ class ShowUserFoods extends Component {
     }
 
     fetchFoodItems = () => {
+        // ✅ FIX: Use correct API endpoint
         axios
-            .get(`http://localhost:8080/zomato/user/get-fooditems?restaurantId=${this.restaurantId}`)
+            .get(`http://localhost:8080/zomato/user/get-all-food-items`)
             .then((resp) => {
+                console.log("All food items:", resp.data);
                 if (resp.data && Array.isArray(resp.data)) {
+                    // Filter foods by restaurantId
+                    const restaurantFoods = resp.data.filter(food =>
+                        food.restaurantId === this.restaurantId
+                    );
                     this.setState({
-                        listOfFoods: resp.data,
+                        listOfFoods: restaurantFoods,
                         loading: false
                     });
                 } else {
@@ -72,7 +81,8 @@ class ShowUserFoods extends Component {
             quantity: [1],
         };
 
-        History.push({
+        // ✅ FIX: Use this.props.history instead of History
+        this.props.history.push({
             pathname: "/Placeorder",
             state: {
                 orddata: obj,
@@ -102,6 +112,7 @@ class ShowUserFoods extends Component {
                     <div className="ShowUserFoods">
                         <p style={{ textAlign: 'center' }}>No Foods Available for this restaurant</p>
                         <p style={{ textAlign: 'center' }}>Restaurant ID: {this.restaurantId}</p>
+                        <p style={{ textAlign: 'center' }}>User Phone: {this.userPhoneNumber}</p>
                     </div>
                 </>
             );
@@ -140,4 +151,5 @@ class ShowUserFoods extends Component {
     }
 }
 
-export default ShowUserFoods;
+// ✅ FIX: Export with withRouter
+export default withRouter(ShowUserFoods);

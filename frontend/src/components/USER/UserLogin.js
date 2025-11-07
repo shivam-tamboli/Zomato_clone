@@ -12,7 +12,7 @@ class UserLogin extends Component {
 
     showFoods = (e) =>{
         this.props.history.push({
-            pathname:"/User",
+            pathname:"/Userfoods",
             state:{
                 phonenum:this.userPhoneNumber
             }
@@ -42,7 +42,7 @@ class UserLogin extends Component {
     {
         console.log("OKK")
         this.props.history.push({
-            pathname:"/User",
+            pathname:"/Userrestaurant",
             state:{
                 phonenum:this.userPhoneNumber
             }

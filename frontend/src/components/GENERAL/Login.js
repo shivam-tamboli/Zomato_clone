@@ -7,12 +7,11 @@ import { withRouter } from 'react-router-dom'
 
 class Login extends Component {
     constructor(props) {
-        super(props)
-        document.addEventListener('click',this.back)
+        super(props);
         this.state = {
-            number:0,
-            url:"http://localhost:8080/zomato/user/login"
-        }
+            listOfRest: [],
+            loading: true,
+        };
     }
 
     back=(e)=>
@@ -29,12 +28,12 @@ class Login extends Component {
     checkLogin=(e)=>
     {
         e.preventDefault();
-        let phonenum = Number(document.getElementById("phonenum").value)
+        let phonenum = document.getElementById("phonenum").value; // 🛠 FIX: Keep as string
         let password = document.getElementById("loginpass").value
 
-        if(phonenum===0 || password==="")
+        if(phonenum==="" || password==="")
         {
-            if(phonenum===0)
+            if(phonenum==="")
             {
                 document.getElementById("loginfalse1").innerHTML="Please enter phone number"
                 document.getElementById("phonenum").style.borderColor="rgba(215,65,85)";
@@ -58,18 +57,23 @@ class Login extends Component {
             .then((res) => {
                 console.log("Login response from backend:", res.data);
 
-                if (res.data === "user_not_found") {
+                if (res.data === "phone") {
                     document.getElementById("loginfalse1").innerHTML = "Invalid phone number";
-                } else if (res.data === "invalid_password") {
+                } else if (res.data === "password") {
                     document.getElementById("loginfalse2").innerHTML = "Invalid password";
                 } else if (res.data === "Success_admin") {
                     localStorage.setItem('ap', JSON.stringify(phonenum));
                     this.props.history.push("/Admin");
                 } else if (res.data === "Success_user") {
+                    // 🛠 FIX: Save phone number to localStorage and navigate properly
+                    localStorage.setItem('userPhoneNumber', phonenum);
+                    console.log("✅ Login successful, navigating to Userrestaurant with phone:", phonenum);
 
                     this.props.history.push({
-                        pathname: "/User",
-                        state: { phonenum: String(phonenum) }
+                        pathname: "/Userrestaurant",
+                        state: {
+                            phonenum: phonenum  // 🛠 FIX: Pass as string, not Number
+                        }
                     });
                 } else {
                     console.warn("Unexpected login response:", res.data);
@@ -151,4 +155,4 @@ class Login extends Component {
     }
 }
 
-export default withRouter(Login) // ✅ ADD THIS
+export default withRouter(Login)
