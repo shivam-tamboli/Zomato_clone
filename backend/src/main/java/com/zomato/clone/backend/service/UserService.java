@@ -244,28 +244,25 @@ public class UserService {
     }
 
     public ResponseEntity<String> rateOrder(Map<String, Object> entity) {
-
-
         Integer restaurantId = (Integer) entity.get("restaurantId");
         RestaurantInfo rest = restaurantInfoRepo.findById(restaurantId)
                 .orElseThrow(() -> new RuntimeException("Restaurant not found"));
-
 
         String phoneNumber = (String) entity.get("phonenumber");
         UserInfo user = userInfoRepo.findByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Fetch order
+        // Fetch order (REMOVED the setOrderFlag line)
         Integer orderId = (Integer) entity.get("orderId");
         OrderInfo orderInfo = orderInfoRepo.findByUserIdAndOrderId(user.getUserId(), orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
-
-        orderInfo.setOrderFlag(1);
+        // ✅ REMOVED: orderInfo.setOrderFlag(1); - Don't change order status when rating
+        // ✅ Order status remains whatever it was before rating
         orderInfoRepo.save(orderInfo);
 
         // Update restaurant rating
-        Float ratingValue = ((Number) entity.get("restaurantRating")).floatValue(); // rating from request
+        Float ratingValue = ((Number) entity.get("restaurantRating")).floatValue();
         if (rest.getRestaurantRating() == 0.0f) {
             rest.setRestaurantRating(ratingValue);
             rest.setNumOfRating(rest.getNumOfRating() + 1);
@@ -276,7 +273,6 @@ public class UserService {
             rest.setNumOfRating(rest.getNumOfRating() + 1);
         }
         restaurantInfoRepo.save(rest);
-
 
         RestaurantRating restaurantRating = new RestaurantRating();
         restaurantRating.setName(user.getName());
