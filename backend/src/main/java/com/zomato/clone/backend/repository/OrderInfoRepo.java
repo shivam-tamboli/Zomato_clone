@@ -14,4 +14,5 @@ public interface OrderInfoRepo extends CrudRepository<OrderInfo, Integer> {
     public List<OrderInfo> findAllByUserid(Integer solve);
 
     public Optional<OrderInfo> findByUserIdAndOrderId(Integer userId,Integer orderId);
+
 }

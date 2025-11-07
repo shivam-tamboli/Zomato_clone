@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -101,7 +102,7 @@ public class UserService {
             return new ResponseEntity<>("invalid_answer", HttpStatus.OK);
         }
 
-        // update password
+
         userInfo1.setPassword(forgotPassword.get("password"));
         userInfoRepo.save(userInfo1);
 
@@ -161,43 +162,75 @@ public class UserService {
 
 
     public ResponseEntity<String> placeOrder(Map entity) {
-        Optional<RestaurantInfo> restaurantInfo = restaurantInfoRepo.findById((Integer) entity.get("restaurantId"));
+        // ✅ ADD DEBUG: Print all received fields
+        System.out.println("=== PLACE ORDER DEBUG ===");
+        entity.forEach((key, value) -> {
+            System.out.println("Key: " + key + ", Value: " + value + ", Type: " + (value != null ? value.getClass().getSimpleName() : "null"));
+            if (value instanceof ArrayList) {
+                System.out.println("  Array contents: " + value);
+            }
+        });
+        System.out.println("=========================");
+
+        Optional<RestaurantInfo> restaurantInfo = restaurantInfoRepo.findById((Integer) entity.get("restaurantid"));
         RestaurantInfo rest = restaurantInfo.get();
         OrderInfo orderInfo = new OrderInfo();
-        orderInfo.setRestaurantId((Integer) entity.get("restaurantId"));
-        orderInfo.setRestaurantName((String) entity.get("restaurantName"));
+        orderInfo.setRestaurantId((Integer) entity.get("restaurantid"));
+        orderInfo.setRestaurantName((String) entity.get("restaurantname"));
         Optional<UserInfo> userInfo = userInfoRepo.findByPhoneNumber((String) entity.get("phonenumber"));
         UserInfo user = userInfo.get();
         orderInfo.setUserId(user.getUserId());
-        orderInfo.setDeliveryAddress((String) entity.get("deliveryAddress"));
-        orderInfo.setTotalAmount((Integer) entity.get("totalAmount"));
+        orderInfo.setDeliveryAddress((String) entity.get("deliveryaddress"));
+        orderInfo.setTotalAmount((Integer) entity.get("totalamount")); // ✅ FIXED: Changed to lowercase
         orderInfoRepo.save(orderInfo);
 
-        ArrayList<String> fooditemid = (ArrayList) entity.get("foodItemId");
-        ListIterator<String> ll = fooditemid.listIterator();
+        // ✅ ADD DEBUG: Check each array before processing
+        System.out.println("=== ARRAY DEBUG ===");
+        ArrayList<String> fooditemid = (ArrayList) entity.get("fooditemid"); // ✅ FIXED: Changed to lowercase
+        System.out.println("fooditemid: " + fooditemid);
 
-        ArrayList<String> foodname = (ArrayList) entity.get("foodName");
-        ListIterator<String> name = foodname.listIterator();
+        ArrayList<String> foodname = (ArrayList) entity.get("foodname"); // ✅ FIXED: Changed to lowercase
+        System.out.println("foodname: " + foodname);
 
         ArrayList<String> amount = (ArrayList) entity.get("amount");
-        ListIterator<String> famount = amount.listIterator();
+        System.out.println("amount: " + amount);
 
         ArrayList<String> quantity = (ArrayList) entity.get("quantity");
+        System.out.println("quantity: " + quantity);
+        System.out.println("===================");
+
+        // ✅ ADD VALIDATION: Check if arrays are null or empty
+        if (fooditemid == null || foodname == null || amount == null || quantity == null) {
+            System.out.println("ERROR: One or more required arrays are null");
+            return new ResponseEntity<>("Invalid order data: missing arrays", HttpStatus.BAD_REQUEST);
+        }
+
+        if (fooditemid.isEmpty()) {
+            System.out.println("ERROR: No food items in order");
+            return new ResponseEntity<>("No food items selected", HttpStatus.BAD_REQUEST);
+        }
+
+        ListIterator<String> ll = fooditemid.listIterator();
+        ListIterator<String> name = foodname.listIterator();
+        ListIterator<String> famount = amount.listIterator();
         ListIterator<String> fquantity = quantity.listIterator();
 
         while (ll.hasNext()) {
-
             OrderFoodItems orderFoodItems = new OrderFoodItems();
             String s = ll.next();
+            System.out.println("Processing fooditemid: " + s);
             orderFoodItems.setFoodItemId(Integer.parseInt(s));
 
             s = name.next();
+            System.out.println("Processing foodname: " + s);
             orderFoodItems.setFoodName(s);
 
             s = famount.next();
+            System.out.println("Processing amount: " + s);
             orderFoodItems.setAmount(Integer.parseInt(s));
 
             s = fquantity.next();
+            System.out.println("Processing quantity: " + s);
             orderFoodItems.setQuantity(Integer.parseInt(s));
 
             orderFoodItems.setOrderInfo(orderInfo);
@@ -208,17 +241,16 @@ public class UserService {
         System.out.println("*******************************" + orderInfo);
 
         return ResponseEntity.ok().body("success");
-
     }
 
     public ResponseEntity<String> rateOrder(Map<String, Object> entity) {
 
-        // Fetch restaurant
+
         Integer restaurantId = (Integer) entity.get("restaurantId");
         RestaurantInfo rest = restaurantInfoRepo.findById(restaurantId)
                 .orElseThrow(() -> new RuntimeException("Restaurant not found"));
 
-        // Fetch user
+
         String phoneNumber = (String) entity.get("phonenumber");
         UserInfo user = userInfoRepo.findByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -228,7 +260,7 @@ public class UserService {
         OrderInfo orderInfo = orderInfoRepo.findByUserIdAndOrderId(user.getUserId(), orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
-        // Update order
+
         orderInfo.setOrderFlag(1);
         orderInfoRepo.save(orderInfo);
 
@@ -245,7 +277,7 @@ public class UserService {
         }
         restaurantInfoRepo.save(rest);
 
-        // Save restaurant review
+
         RestaurantRating restaurantRating = new RestaurantRating();
         restaurantRating.setName(user.getName());
         restaurantRating.setRestaurantId(restaurantId);
@@ -313,15 +345,47 @@ public class UserService {
     }
 
     public ResponseEntity<List<OrderInfo>> getAllOrderDetails(Map entity) {
-        Optional<UserInfo> userInfo = userInfoRepo.findByPhoneNumber((String) entity.get("phonenumber"));
+
+        String phoneNumber = (String) entity.get("phonenumber");
+
+        if (phoneNumber == null || phoneNumber.isEmpty()) {
+            System.out.println("Phone number is null or empty in getAllOrderDetails");
+            return ResponseEntity.ok().body(new ArrayList<>());
+        }
+
+        Optional<UserInfo> userInfo = userInfoRepo.findByPhoneNumber(phoneNumber);
+
+
+        if (userInfo.isEmpty()) {
+            System.out.println("User not found for phone: " + phoneNumber);
+            return ResponseEntity.ok().body(new ArrayList<>());
+        }
+
         UserInfo user = userInfo.get();
         int id = user.getUserId();
         List<OrderInfo> oi = orderInfoRepo.findAllByUserid(id);
-        if (oi.isEmpty()) {
-            return ResponseEntity.ok().body(oi);
-        }
+
         return ResponseEntity.ok().body(oi);
     }
 
+    public ResponseEntity<List<RestaurantInfo>> getAllRestaurants() {
+        List<RestaurantInfo> restaurants = restaurantInfoRepo.findAll();
+        return ResponseEntity.ok().body(restaurants);
+    }
+
+    public ResponseEntity<List<FoodItem>> getFoodItemsByRestaurant(Map<String, Integer> entity) {
+        Integer restaurantId = entity.get("restaurantid");
+
+        // Get all food items and filter by restaurant ID
+        List<FoodItem> allFoodItems = foodItemRepo.findAll();
+        List<FoodItem> restaurantFoods = allFoodItems.stream()
+                .filter(food -> food.getRestaurantInfo().getRestaurantId().equals(restaurantId))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok().body(restaurantFoods);
+    }
+
+    // In UserService.java
+    // In UserService.java
 
 }

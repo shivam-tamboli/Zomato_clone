@@ -1,9 +1,6 @@
 package com.zomato.clone.backend.controller;
 
-import com.zomato.clone.backend.models.FoodItemDetails;
-import com.zomato.clone.backend.models.OrderInfo;
-import com.zomato.clone.backend.models.RestaurantInfo;
-import com.zomato.clone.backend.models.SearchFoodItem;
+import com.zomato.clone.backend.models.*;
 import com.zomato.clone.backend.service.UserService;
 import com.zomato.clone.backend.service.ValidUser;
 import org.springframework.http.HttpStatus;
@@ -150,8 +147,22 @@ public class UserController {
         return userService.getAllFoodItems();
     }
 
-    @PostMapping(value = "/get-all-order-details")
-    public ResponseEntity<List<OrderInfo>> getAllOrderDetails(@RequestBody Map entity) {
+    // This method already exists in your controller, use it instead
+    @PostMapping("/get-all-order-details")
+    public ResponseEntity<List<OrderInfo>> getAllOrderDetails(@RequestBody Map<String, String> entity) {
         return userService.getAllOrderDetails(entity);
     }
+
+    @GetMapping(value = "/get-all-restaurants")
+    public ResponseEntity<List<RestaurantInfo>> getAllRestaurants() {
+        return userService.getAllRestaurants();
+    }
+
+    @PostMapping(value = "/get-fooditems")
+    public ResponseEntity<List<FoodItem>> getFoodItems(@RequestBody Map<String, Integer> entity) {
+        return userService.getFoodItemsByRestaurant(entity);
+    }
+
+
+
 }
