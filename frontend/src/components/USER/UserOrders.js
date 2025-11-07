@@ -80,7 +80,6 @@ export default class UserOrders extends Component {
                     restaurantName: order.restaurantName || order.restaurantname || "Unknown Restaurant",
                     totalAmount: order.totalAmount || order.totalamount || 0,
                     deliveryAddress: order.deliveryAddress || order.deliveryaddress || "Not specified",
-                    orderFlag: this.getOrderFlagText(order.orderFlag),
                     foodItems: order.orderFoodItems || order.foodItems || order.fooditems || []
                 };
             });
@@ -122,21 +121,6 @@ export default class UserOrders extends Component {
         }
     }
 
-    getOrderFlagText = (orderFlag) => {
-        switch (orderFlag) {
-            case 0: return "PENDING";
-            case 1: return "DELIVERED";
-            case 2: return "CANCELLED";
-            case 3: return "PROCESSING";
-            default: return "PENDING";
-        }
-    }
-
-    retryFetchOrders = () => {
-        this.setState({ loading: true, error: null });
-        this.fetchUserOrders();
-    }
-
     rateOrder = (order) => {
         console.log("⭐ Rating order:", order);
 
@@ -168,9 +152,9 @@ export default class UserOrders extends Component {
         });
     }
 
-    viewOrderDetails = (order) => {
-        console.log("👀 Viewing order details:", order);
-        alert(`Order Details:\nRestaurant: ${order.restaurantName}\nTotal: ₹${order.totalAmount}\nStatus: ${order.orderFlag}`);
+    retryFetchOrders = () => {
+        this.setState({ loading: true, error: null });
+        this.fetchUserOrders();
     }
 
     navigateToRestaurants = () => {
@@ -253,9 +237,6 @@ export default class UserOrders extends Component {
                             <div key={order.orderId || index} className="order-card">
                                 <div className="order-header">
                                     <h3>Order #{order.orderId}</h3>
-                                    <span className={`order-status ${order.orderFlag?.toLowerCase()}`}>
-                                        {order.orderFlag || "PENDING"}
-                                    </span>
                                 </div>
 
                                 <div className="order-details">
@@ -287,20 +268,13 @@ export default class UserOrders extends Component {
                                     </div>
                                 </div>
 
+                                {/* Rating button for EVERY order */}
                                 <div className="order-actions">
-                                    {order.orderFlag === "DELIVERED" && (
-                                        <button
-                                            onClick={() => this.rateOrder(order)}
-                                            className="rate-btn"
-                                        >
-                                            ⭐ Rate Order
-                                        </button>
-                                    )}
                                     <button
-                                        onClick={() => this.viewOrderDetails(order)}
-                                        className="details-btn"
+                                        onClick={() => this.rateOrder(order)}
+                                        className="rate-btn"
                                     >
-                                        📋 View Details
+                                        ⭐ Rate This Order
                                     </button>
                                 </div>
                             </div>
