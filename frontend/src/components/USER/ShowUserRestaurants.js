@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import UserLogin from './UserLogin';
 import '../CSS/Showuserres.css'
 
 export default class ShowUserRestaurants extends Component {
@@ -19,7 +18,8 @@ export default class ShowUserRestaurants extends Component {
             listOfRest: [],
             allRestaurants: [],
             loading: true,
-            error: null
+            error: null,
+            searchQuery: ''
         };
     }
 
@@ -63,9 +63,8 @@ export default class ShowUserRestaurants extends Component {
     }
 
     checkFoods = (restaurant) => {
-        console.log("🎯 Simple navigation test");
+        console.log("🎯 Navigation to foods page");
 
-        // Simple data object
         const navigationData = {
             restaurantname: restaurant.restaurantname,
             phonenumber: this.userPhoneNumber,
@@ -74,7 +73,6 @@ export default class ShowUserRestaurants extends Component {
 
         console.log("📤 Sending:", navigationData);
 
-        // Simple navigation
         this.props.history.push({
             pathname: "/Userfoods",
             state: {
@@ -88,117 +86,119 @@ export default class ShowUserRestaurants extends Component {
         const searchValue = e.target.value;
         console.log("Searching for:", searchValue);
 
+        this.setState({ searchQuery: searchValue });
+
         if(searchValue.trim() === ""){
             this.setState({listOfRest: this.state.allRestaurants});
             return;
         }
 
-        axios.post("http://localhost:8080/zomato/user/search-by-name", {"search": searchValue})
-            .then((resp)=>{
-                console.log("Search results:", resp.data);
+        // Simple client-side search
+        const filteredRestaurants = this.state.allRestaurants.filter(restaurant =>
+            restaurant.restaurantname.toLowerCase().includes(searchValue.toLowerCase())
+        );
 
-                const transformedResults = resp.data.map(restaurant => ({
-                    restaurantid: restaurant.restaurantId,
-                    restaurantname: restaurant.restaurantName,
-                    restaurantaddress: restaurant.restaurantAddress,
-                    restaurantrating: restaurant.restaurantRating,
-                    restaurantimages: restaurant.restaurantImages || []
-                }));
-
-                this.setState({listOfRest: transformedResults});
-            })
-            .catch((err)=>{
-                console.log("Search error:", err);
-                this.setState({listOfRest: this.state.allRestaurants});
-            });
+        this.setState({listOfRest: filteredRestaurants});
     };
 
     render() {
-        const { listOfRest, loading, error } = this.state;
+        const { listOfRest, loading, error, searchQuery } = this.state;
 
         if (loading) {
             return (
-                <>
-                    <UserLogin phh={this.userPhoneNumber}/>
-                    <div className='ShowUserRestuarants'>
+                <div className='ShowUserRestuarants'>
+                    <div className="loading-container">
                         <p>Loading restaurants...</p>
                     </div>
-                </>
+                </div>
             );
         }
 
         if (error) {
             return (
-                <>
-                    <UserLogin phh={this.userPhoneNumber}/>
-                    <div className='ShowUserRestuarants'>
+                <div className='ShowUserRestuarants'>
+                    <div className="error-container">
                         <p>Error: {error}</p>
+                        <button onClick={() => window.location.reload()}>Try Again</button>
                     </div>
-                </>
+                </div>
             );
         }
 
-        if(listOfRest.length === 0){
-            return(
-                <>
-                    <UserLogin phh={this.userPhoneNumber}/>
-                    <div className='ShowUserRestuarants'>
-                        <input
-                            type="search"
-                            onChange={this.searchRestaurants}
-                            placeholder='Search Restaurant'
-                            id='searchRestaurants'
-                        />
-                        <p id="nra">No Available Restaurants</p>
-                    </div>
-                </>
-            );
-        } else {
-            return (
-                <>
-                    <UserLogin phh={this.userPhoneNumber}/>
-                    <div className='ShowUserRestuarants'>
-                        <input
-                            type="search"
-                            onChange={this.searchRestaurants}
-                            placeholder='Search Restaurant'
-                            id='searchRestaurants'
-                        />
-                        <div className='restlistuser'>
-                            {
-                                listOfRest.map((restaurant) => {
-                                    return(
-                                        <div className="restaurantsr" key={restaurant.restaurantid} id={restaurant.restaurantid}>
-                                            <div className='resname1'>{restaurant.restaurantname}</div>
-                                            <p className='resnamerating'>{"Rating : " + (restaurant.restaurantrating ? restaurant.restaurantrating.toPrecision(2) : "0") + " / 5"}</p>
-                                            <button
-                                                className='usrvmenub'
-                                                onClick={() => this.checkFoods(restaurant)}
-                                            >
-                                                View menu
-                                            </button>
-                                            <div id="imggrp1">
-                                                {
-                                                    restaurant.restaurantimages && restaurant.restaurantimages.map((image) => {
-                                                        return(
-                                                            <img
-                                                                src={image.link}
-                                                                key={image.imageId || image.imageid}
-                                                                alt={restaurant.restaurantname}
-                                                                className='Checkfood1'
-                                                            />
-                                                        );
-                                                    })
-                                                }
-                                            </div>
-                                        </div>
-                                    );
-                                })
-                            }
+        return (
+            <div className='ShowUserRestuarants'>
+                {/* Simple Header */}
+                <div className="page-header">
+                    <h1>Foods</h1>
+                </div>
+
+                {/* Search Section */}
+                <div className="search-section">
+                    <h2>Restaurants</h2>
+                    <input
+                        type="search"
+                        value={searchQuery}
+                        onChange={this.searchRestaurants}
+                        placeholder='Search Restaurant'
+                        className='search-input'
+                    />
+                </div>
+
+                <hr className="section-divider" />
+
+                {/* Restaurants List */}
+                <div className='restaurants-list'>
+                    {listOfRest.length === 0 ? (
+                        <div className="no-restaurants">
+                            <p>No Restaurants Found</p>
+                            {searchQuery && (
+                                <button
+                                    onClick={() => {
+                                        this.setState({
+                                            listOfRest: this.state.allRestaurants,
+                                            searchQuery: ''
+                                        });
+                                    }}
+                                >
+                                    Show All Restaurants
+                                </button>
+                            )}
                         </div>
-                    </div>
-                </>
-            );
-        }
+                    ) : (
+                        listOfRest.map((restaurant) => {
+                            return(
+                                <div className="restaurant-item" key={restaurant.restaurantid}>
+                                    <h3>{restaurant.restaurantname}</h3>
+                                    <p className="rating">Rating : {restaurant.restaurantrating ? restaurant.restaurantrating.toFixed(1) : "0"} / 5</p>
+                                    <p className="address">{restaurant.restaurantaddress}</p>
+                                    <button
+                                        className='view-menu-btn'
+                                        onClick={() => this.checkFoods(restaurant)}
+                                    >
+                                        View menu
+                                    </button>
+
+                                    {/* Restaurant Images - only show if available */}
+                                    {restaurant.restaurantimages && restaurant.restaurantimages.length > 0 && (
+                                        <div className="restaurant-images">
+                                            {restaurant.restaurantimages.slice(0, 2).map((image, index) => (
+                                                <img
+                                                    src={image.link}
+                                                    key={image.imageId || image.imageid || index}
+                                                    alt={restaurant.restaurantname}
+                                                    className='restaurant-image'
+                                                />
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    <hr className="item-divider" />
+                                </div>
+                            );
+                        })
+                    )}
+                </div>
+            </div>
+        );
     }
 }

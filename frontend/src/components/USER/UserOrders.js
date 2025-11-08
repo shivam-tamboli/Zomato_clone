@@ -220,9 +220,14 @@ export default class UserOrders extends Component {
 
         return (
             <div className="user-orders-container">
-                {/* Header Section */}
+                {/* Header Section with New Order Button */}
                 <header className="orders-header">
-                    <h1>Your Orders</h1>
+                    <div className="header-content">
+                        <h1>Your Orders</h1>
+                        <button onClick={this.navigateToRestaurants} className="new-order-btn">
+                            + New Order
+                        </button>
+                    </div>
                 </header>
 
                 {/* Orders List */}

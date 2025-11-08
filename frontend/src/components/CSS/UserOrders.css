@@ -9,8 +9,15 @@
 }
 
 .orders-header {
-    text-align: center;
     margin-bottom: 30px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
 }
 
 .orders-header h1 {
@@ -20,7 +27,27 @@
     margin: 0;
     padding-bottom: 10px;
     border-bottom: 3px solid #e74c3c;
+}
+
+.new-order-btn {
+    background: linear-gradient(135deg, #27ae60, #229954);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+    text-decoration: none;
     display: inline-block;
+}
+
+.new-order-btn:hover {
+    background: linear-gradient(135deg, #229954, #1e8449);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
 }
 
 .order-card {
@@ -170,6 +197,11 @@
         padding: 15px;
     }
 
+    .header-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
     .orders-header h1 {
         font-size: 2rem;
     }
@@ -180,5 +212,10 @@
 
     .order-card h2 {
         font-size: 1.3rem;
+    }
+
+    .new-order-btn {
+        width: 100%;
+        max-width: 200px;
     }
 }
