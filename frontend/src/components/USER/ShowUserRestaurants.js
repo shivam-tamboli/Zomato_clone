@@ -82,6 +82,24 @@ export default class ShowUserRestaurants extends Component {
         });
     };
 
+    navigateToOrders = () => {
+        this.props.history.push({
+            pathname: "/Orders",
+            state: {
+                phonenum: this.userPhoneNumber
+            }
+        });
+    };
+
+    navigateToRateOrders = () => {
+        this.props.history.push({
+            pathname: "/Orders",
+            state: {
+                phonenum: this.userPhoneNumber
+            }
+        });
+    };
+
     searchRestaurants = (e) => {
         const searchValue = e.target.value;
         console.log("Searching for:", searchValue);
@@ -106,9 +124,11 @@ export default class ShowUserRestaurants extends Component {
 
         if (loading) {
             return (
-                <div className='ShowUserRestuarants'>
-                    <div className="loading-container">
-                        <p>Loading restaurants...</p>
+                <div className="user-restaurants-container">
+                    <div className="loading-message">
+                        <h2>Loading restaurants...</h2>
+                        <p>Please wait while we fetch available restaurants.</p>
+                        <div className="loading-spinner"></div>
                     </div>
                 </div>
             );
@@ -116,21 +136,49 @@ export default class ShowUserRestaurants extends Component {
 
         if (error) {
             return (
-                <div className='ShowUserRestuarants'>
-                    <div className="error-container">
-                        <p>Error: {error}</p>
-                        <button onClick={() => window.location.reload()}>Try Again</button>
+                <div className="user-restaurants-container">
+                    <div className="error-message">
+                        <h2>Error</h2>
+                        <p>{error}</p>
+                        <button onClick={() => window.location.reload()} className="retry-btn">
+                            🔄 Try Again
+                        </button>
                     </div>
                 </div>
             );
         }
 
         return (
-            <div className='ShowUserRestuarants'>
-                {/* Simple Header */}
-                <div className="page-header">
-                    <h1>Foods</h1>
-                </div>
+            <div className="user-restaurants-container">
+                {/* Header Section with Navigation */}
+                <header className="restaurants-header">
+                    <div className="header-content">
+                        <h1>Foods</h1>
+                        <p className="subtitle">Discover amazing restaurants near you</p>
+
+                        {/* Navigation Options */}
+                        <div className="navigation-options">
+                            <button
+                                className="nav-btn active"
+                                onClick={() => window.location.reload()}
+                            >
+                                🍕 Foods
+                            </button>
+                            <button
+                                className="nav-btn"
+                                onClick={this.navigateToOrders}
+                            >
+                                📋 My Orders
+                            </button>
+                            <button
+                                className="nav-btn"
+                                onClick={this.navigateToRateOrders}
+                            >
+                                ⭐ Rate Your Order
+                            </button>
+                        </div>
+                    </div>
+                </header>
 
                 {/* Search Section */}
                 <div className="search-section">
@@ -139,18 +187,18 @@ export default class ShowUserRestaurants extends Component {
                         type="search"
                         value={searchQuery}
                         onChange={this.searchRestaurants}
-                        placeholder='Search Restaurant'
+                        placeholder='Search Restaurant by name...'
                         className='search-input'
                     />
+                    <hr className="section-divider" />
                 </div>
-
-                <hr className="section-divider" />
 
                 {/* Restaurants List */}
                 <div className='restaurants-list'>
                     {listOfRest.length === 0 ? (
-                        <div className="no-restaurants">
-                            <p>No Restaurants Found</p>
+                        <div className="no-restaurants-message">
+                            <h2>No Restaurants Found</h2>
+                            <p>Try adjusting your search criteria</p>
                             {searchQuery && (
                                 <button
                                     onClick={() => {
@@ -159,6 +207,7 @@ export default class ShowUserRestaurants extends Component {
                                             searchQuery: ''
                                         });
                                     }}
+                                    className="clear-search-btn"
                                 >
                                     Show All Restaurants
                                 </button>
@@ -167,21 +216,19 @@ export default class ShowUserRestaurants extends Component {
                     ) : (
                         listOfRest.map((restaurant) => {
                             return(
-                                <div className="restaurant-item" key={restaurant.restaurantid}>
+                                <div className="restaurant-card" key={restaurant.restaurantid}>
                                     <h3>{restaurant.restaurantname}</h3>
-                                    <p className="rating">Rating : {restaurant.restaurantrating ? restaurant.restaurantrating.toFixed(1) : "0"} / 5</p>
-                                    <p className="address">{restaurant.restaurantaddress}</p>
-                                    <button
-                                        className='view-menu-btn'
-                                        onClick={() => this.checkFoods(restaurant)}
-                                    >
-                                        View menu
-                                    </button>
+                                    <p className="restaurant-rating">
+                                        Rating: {restaurant.restaurantrating ? restaurant.restaurantrating.toFixed(1) : "0"} / 5
+                                    </p>
+                                    <p className="restaurant-address">
+                                        {restaurant.restaurantaddress}
+                                    </p>
 
-                                    {/* Restaurant Images - only show if available */}
+                                    {/* Restaurant Images */}
                                     {restaurant.restaurantimages && restaurant.restaurantimages.length > 0 && (
                                         <div className="restaurant-images">
-                                            {restaurant.restaurantimages.slice(0, 2).map((image, index) => (
+                                            {restaurant.restaurantimages.slice(0, 3).map((image, index) => (
                                                 <img
                                                     src={image.link}
                                                     key={image.imageId || image.imageid || index}
@@ -192,7 +239,14 @@ export default class ShowUserRestaurants extends Component {
                                         </div>
                                     )}
 
-                                    <hr className="item-divider" />
+                                    <hr className="restaurant-divider" />
+
+                                    <button
+                                        className='view-menu-btn'
+                                        onClick={() => this.checkFoods(restaurant)}
+                                    >
+                                        View menu
+                                    </button>
                                 </div>
                             );
                         })
