@@ -75,7 +75,7 @@ export default class UserOrders extends Component {
                 console.log(`🔍 Processing order ${index}:`, order);
 
                 return {
-                    orderId: order.orderId || order.orderid || `temp-${index}`,
+                    orderId: order.orderId || order.orderid || `ORD-${index + 1}`,
                     restaurantId: order.restaurantId || order.restaurantid,
                     restaurantName: order.restaurantName || order.restaurantname || "Unknown Restaurant",
                     totalAmount: order.totalAmount || order.totalamount || 0,
@@ -220,34 +220,28 @@ export default class UserOrders extends Component {
 
         return (
             <div className="user-orders-container">
+                {/* Header Section */}
                 <header className="orders-header">
-                    <button onClick={this.navigateToHome} className="back-btn">
-                        ← Home
-                    </button>
                     <h1>Your Orders</h1>
-                    <button onClick={this.navigateToRestaurants} className="new-order-btn">
-                        + New Order
-                    </button>
                 </header>
 
+                {/* Orders List */}
                 <div className="orders-list">
                     {orders.map((order, index) => {
                         console.log(`Order ${index} data:`, order);
                         return (
                             <div key={order.orderId || index} className="order-card">
-                                <div className="order-header">
-                                    <h3>Order #{order.orderId}</h3>
-                                </div>
+                                <h2>Order #{order.orderId}</h2>
 
                                 <div className="order-details">
                                     <p className="restaurant-name">
-                                        <strong>Restaurant:</strong> {order.restaurantName}
+                                        <strong>Restaurant: {order.restaurantName}</strong>
                                     </p>
                                     <p className="delivery-address">
-                                        <strong>Delivery to:</strong> {order.deliveryAddress}
+                                        Delivery to: {order.deliveryAddress}
                                     </p>
                                     <p className="total-amount">
-                                        <strong>Total:</strong> ₹{order.totalAmount}
+                                        Total: ₹{order.totalAmount}
                                     </p>
 
                                     <div className="food-items">
@@ -268,13 +262,15 @@ export default class UserOrders extends Component {
                                     </div>
                                 </div>
 
+                                <hr className="order-divider" />
+
                                 {/* Rating button for EVERY order */}
                                 <div className="order-actions">
                                     <button
                                         onClick={() => this.rateOrder(order)}
                                         className="rate-btn"
                                     >
-                                        ⭐ Rate This Order
+                                        * Rate This Order *
                                     </button>
                                 </div>
                             </div>
