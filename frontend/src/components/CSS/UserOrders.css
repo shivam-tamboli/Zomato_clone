@@ -1,269 +1,65 @@
+/* UserOrders.css */
 .user-orders-container {
-    max-width: 1200px;
+    max-width: 800px;
     margin: 0 auto;
     padding: 20px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Arial', sans-serif;
     background-color: #f8f9fa;
     min-height: 100vh;
 }
 
-/* Header Styles */
 .orders-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: white;
-    padding: 20px 30px;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
     margin-bottom: 30px;
-    border-left: 5px solid #ff6b6b;
 }
 
 .orders-header h1 {
-    color: #333;
-    font-size: 2.2rem;
-    font-weight: 700;
+    color: #2c3e50;
+    font-size: 2.5rem;
+    font-weight: bold;
     margin: 0;
-    text-align: center;
-    flex: 1;
-}
-
-.back-btn, .new-order-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    padding: 12px 25px;
-    border-radius: 25px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-.back-btn:hover, .new-order-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-}
-
-/* Loading Styles */
-.loading-message {
-    text-align: center;
-    padding: 60px 20px;
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.loading-message h2 {
-    color: #333;
-    margin-bottom: 15px;
-    font-size: 1.8rem;
-}
-
-.loading-message p {
-    color: #666;
-    font-size: 1.1rem;
-    margin-bottom: 30px;
-}
-
-.loading-spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid #f3f3f3;
-    border-top: 5px solid #ff6b6b;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Error Styles */
-.error-message {
-    text-align: center;
-    padding: 50px 20px;
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    border-left: 5px solid #dc3545;
-}
-
-.error-message h2 {
-    color: #dc3545;
-    margin-bottom: 15px;
-    font-size: 1.8rem;
-}
-
-.error-message p {
-    color: #666;
-    font-size: 1.1rem;
-    margin-bottom: 30px;
-}
-
-.error-actions {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.retry-btn, .home-btn {
-    padding: 12px 25px;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.retry-btn {
-    background: linear-gradient(135deg, #28a745, #20c997);
-    color: white;
-}
-
-.home-btn {
-    background: linear-gradient(135deg, #6c757d, #495057);
-    color: white;
-}
-
-.retry-btn:hover, .home-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-/* No Orders Styles */
-.no-orders-message {
-    text-align: center;
-    padding: 80px 20px;
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.no-orders-message h2 {
-    color: #333;
-    margin-bottom: 15px;
-    font-size: 2rem;
-}
-
-.no-orders-message p {
-    color: #666;
-    font-size: 1.2rem;
-    margin-bottom: 30px;
-}
-
-.order-now-btn {
-    background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
-    color: white;
-    border: none;
-    padding: 15px 35px;
-    border-radius: 30px;
-    cursor: pointer;
-    font-size: 1.2rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
-}
-
-.order-now-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
-}
-
-/* Orders List Styles */
-.orders-list {
-    display: grid;
-    gap: 25px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid #e74c3c;
+    display: inline-block;
 }
 
 .order-card {
     background: white;
-    border-radius: 15px;
+    border-radius: 12px;
     padding: 25px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    border-left: 5px solid #667eea;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-left: 5px solid #e74c3c;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .order-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
-.order-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #f1f3f4;
-}
-
-.order-header h3 {
-    color: #333;
-    font-size: 1.4rem;
-    margin: 0;
-    font-weight: 700;
-}
-
-.order-status {
-    padding: 6px 15px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.order-status.pending {
-    background: #fff3cd;
-    color: #856404;
-    border: 1px solid #ffeaa7;
-}
-
-.order-status.delivered {
-    background: #d1edff;
-    color: #0c5460;
-    border: 1px solid #bee5eb;
-}
-
-.order-status.cancelled {
-    background: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-}
-
-.order-status.processing {
-    background: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+.order-card h2 {
+    color: #2c3e50;
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #ecf0f1;
+    padding-bottom: 8px;
 }
 
 .order-details {
-    margin-bottom: 20px;
-}
-
-.order-details p {
-    margin: 8px 0;
-    color: #555;
-    font-size: 1rem;
+    margin-bottom: 15px;
 }
 
 .restaurant-name {
-    font-size: 1.2rem !important;
-    font-weight: 600;
-    color: #333 !important;
+    font-size: 1.2rem;
+    color: #e74c3c;
+    margin-bottom: 8px;
 }
 
-.total-amount {
-    font-size: 1.1rem !important;
-    font-weight: 700;
-    color: #ff6b6b !important;
+.delivery-address, .total-amount {
+    color: #7f8c8d;
+    margin-bottom: 5px;
+    font-size: 1rem;
 }
 
 .food-items {
@@ -271,64 +67,101 @@
 }
 
 .food-items strong {
-    color: #333;
-    font-size: 1.1rem;
+    color: #2c3e50;
+    display: block;
+    margin-bottom: 8px;
 }
 
 .food-items ul {
     list-style: none;
     padding: 0;
-    margin: 10px 0 0 0;
+    margin: 0;
 }
 
 .food-items li {
-    padding: 8px 12px;
-    margin: 5px 0;
     background: #f8f9fa;
-    border-radius: 8px;
-    border-left: 3px solid #667eea;
-    color: #555;
-    font-size: 0.95rem;
+    padding: 8px 12px;
+    margin-bottom: 5px;
+    border-radius: 6px;
+    border-left: 3px solid #3498db;
+    color: #34495e;
+}
+
+.order-divider {
+    border: none;
+    border-top: 2px dashed #bdc3c7;
+    margin: 20px 0;
 }
 
 .order-actions {
-    display: flex;
-    gap: 15px;
-    justify-content: flex-end;
-    padding-top: 20px;
-    border-top: 1px solid #f1f3f4;
-}
-
-.rate-btn, .details-btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 0.95rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
+    text-align: center;
 }
 
 .rate-btn {
-    background: linear-gradient(135deg, #ffd700, #ffed4e);
-    color: #333;
-    box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
-}
-
-.details-btn {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
     color: white;
-    box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
 }
 
 .rate-btn:hover {
+    background: linear-gradient(135deg, #c0392b, #a93226);
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+    box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
 }
 
-.details-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+/* Loading and Error States */
+.loading-message, .error-message, .no-orders-message {
+    text-align: center;
+    padding: 50px 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.loading-message h2, .error-message h2, .no-orders-message h2 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.error-actions {
+    margin-top: 20px;
+}
+
+.retry-btn, .home-btn, .order-now-btn {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    margin: 0 10px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.retry-btn:hover, .home-btn:hover, .order-now-btn:hover {
+    background: #2980b9;
+}
+
+.loading-spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 2s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 /* Responsive Design */
@@ -337,34 +170,15 @@
         padding: 15px;
     }
 
-    .orders-header {
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
+    .orders-header h1 {
+        font-size: 2rem;
+    }
+
+    .order-card {
         padding: 20px;
     }
 
-    .orders-header h1 {
-        font-size: 1.8rem;
-    }
-
-    .order-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-
-    .order-actions {
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-
-    .back-btn, .new-order-btn, .rate-btn, .details-btn {
-        width: 100%;
-        text-align: center;
-    }
-
-    .error-actions {
-        flex-direction: column;
+    .order-card h2 {
+        font-size: 1.3rem;
     }
 }
